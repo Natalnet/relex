@@ -9,13 +9,15 @@ class ReducLexer extends Lexer
     const START = 2;
     const END = 3;
     const IDENTIFIER = 4;
+    const STRING = 5;
 
     public static $tokenNames = [
         "n/a",
         "<EOF>",
         "START",
         "END",
-        "IDENTIFIER"
+        "IDENTIFIER",
+        "STRING"
     ];
 
     public function getTokenName($x)
@@ -45,6 +47,9 @@ class ReducLexer extends Lexer
                 case "\r":
                     $this->WS();
                     break;
+                case '"':
+                    return $this->handleString();
+                    break;
 
                 default:
                     if ($this->isCurrentCharALetter()) {
@@ -55,6 +60,23 @@ class ReducLexer extends Lexer
             }
         }
         return new Token(self::EOF_TYPE, "<EOF>");
+    }
+
+    public function handleString()
+    {
+        $buffer = '';
+        do {
+            $buffer .= $this->char;
+            $this->consume();
+            if ($this->char == self::EOF) {
+                throw new Exception("Expecting \" character, end of file reached.\n");
+            }
+        } while ($this->char != '"');
+
+        $buffer .= $this->char;
+        $this->consume();
+
+        return new Token(self::STRING, $buffer);
     }
 
     public function handleName()
