@@ -2,6 +2,8 @@
 
 namespace Natalnet\Relex;
 
+use \Exception;
+
 class ReducLexer extends Lexer
 {
     const START = 2;
