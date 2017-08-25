@@ -125,14 +125,14 @@ class ReducLexer extends Lexer
                     $this->consume();
                     if ($this->char == '=') {
                         $this->consume();
-                        return new Token(self::T_GREATER_THAN_EQUALS, '==');
+                        return new Token(self::T_GREATER_THAN_EQUAL, '>=');
                     }
                     return new Token(self::T_GREATER_THAN, '>');
                 case '<':
                     $this->consume();
                     if ($this->char == '=') {
                         $this->consume();
-                        return new Token(self::T_LESS_THAN_EQUALS, '==');
+                        return new Token(self::T_LESS_THAN_EQUALS, '<=');
                     }
                     return new Token(self::T_LOWER_THAN, '<');
                 case '+':
