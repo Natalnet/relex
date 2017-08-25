@@ -92,6 +92,14 @@ class ReducParser extends Parser
                     $continue = true;
                     $this->ifStatement();
                     break;
+                case ReducLexer::T_ENQUANTO:
+                    $continue = true;
+                    $this->whileStatement();
+                    break;
+                case ReducLexer::T_FAREI:
+                    $continue = true;
+                    $this->doStatement();
+                    break;
 
                 default:
                     # code...
@@ -120,6 +128,30 @@ class ReducParser extends Parser
                 $this->match(ReducLexer::T_CLOSE_CURLY_BRACE);
             }
         }
+    }
+
+    public function whileStatement()
+    {
+        $this->match(ReducLexer::T_ENQUANTO);
+        $this->match(ReducLexer::T_OPEN_PARENTHESIS);
+        $this->matchCondition();
+        $this->match(ReducLexer::T_CLOSE_PARENTHESIS);
+        $this->match(ReducLexer::T_FAREI);
+        $this->match(ReducLexer::T_OPEN_CURLY_BRACE);
+        $this->commands();
+        $this->match(ReducLexer::T_CLOSE_CURLY_BRACE);
+    }
+
+    public function doStatement()
+    {
+        $this->match(ReducLexer::T_FAREI);
+        $this->match(ReducLexer::T_OPEN_CURLY_BRACE);
+        $this->commands();
+        $this->match(ReducLexer::T_CLOSE_CURLY_BRACE);
+        $this->match(ReducLexer::T_ENQUANTO);
+        $this->match(ReducLexer::T_OPEN_PARENTHESIS);
+        $this->matchCondition();
+        $this->match(ReducLexer::T_CLOSE_PARENTHESIS);
     }
 
     public function matchCondition()
