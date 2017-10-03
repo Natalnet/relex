@@ -42,6 +42,10 @@ class ReducParser extends Parser
                     $this->match(ReducLexer::T_EQUALS);
                     $this->matchBoolean();
                     break;
+                case ReducLexer::T_TAREFA:
+                    $continue = true;
+                    $this->functionDeclaration();
+                    break;
 
                 default:
                     # code...
@@ -56,6 +60,17 @@ class ReducParser extends Parser
         $this->match(ReducLexer::T_IDENTIFIER);
         $variable = new VariableSymbol($name, $type);
         $this->symbolTable->define($variable);
+    }
+
+    private function taskDeclaration()
+    {
+        $name = $this->lookahead->text;
+        $this->match(ReducLexer::T_IDENTIFIER);
+        $this->match(ReducLexer::T_OPEN_CURLY_BRACE);
+        $this->commands();
+        $this->match(ReducLexer::T_CLOSE_CURLY_BRACE);
+        $task = new Symbol($name, null);
+        $this->symbolTable->define($task);
     }
 
     private function matchBoolean()
