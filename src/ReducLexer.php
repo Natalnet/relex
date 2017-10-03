@@ -58,17 +58,56 @@ class ReducLexer extends Lexer
     const T_VEZES                = 222;
 
     public static $tokenNames = [
-        "n/a",
-        "<EOF>",
-        "START",
-        "END",
-        "IDENTIFIER",
-        "STRING"
+        self::T_NUMBER               => 'numero',
+        self::T_STRING               => 'texto',
+        self::T_COMMA                => ',',
+        self::T_DIVIDE               => '/',
+        self::T_DOT                  => '.',
+        self::T_EQUALS               => '=',
+        self::T_EQUALS_EQUALS        => '==',
+        self::T_GREATER_THAN         => '>',
+        self::T_GREATER_THAN_EQUAL   => '>=',
+        self::T_LESS_THAN            => '<',
+        self::T_LESS_THAN_EQUAL      => '<=',
+        self::T_MINUS                => '-',
+        self::T_MULTIPLY             => '*',
+        self::T_NEGATE               => '!',
+        self::T_NOT_EQUAL            => '!=',
+        self::T_PLUS                 => '+',
+        self::T_SEMICOLON            => ';',
+        self::T_OPEN_PARENTHESIS     => '(',
+        self::T_CLOSE_PARENTHESIS    => ')',
+        self::T_OPEN_CURLY_BRACE     => '{',
+        self::T_CLOSE_CURLY_BRACE    => '}',
+
+        self::T_ATE                  => 'ate',
+        self::T_BOOLEANO             => 'booleano',
+        self::T_DE                   => 'de',
+        self::T_E                    => 'e',
+        self::T_ENQUANTO             => 'enquanto',
+        self::T_ENTAO                => 'entao',
+        self::T_FALSO                => 'falso',
+        self::T_FAREI                => 'farei',
+        self::T_FIM                  => 'fim',
+        self::T_INICIO               => 'inicio',
+        self::T_NUMERO               => 'numero',
+        self::T_OU                   => 'ou',
+        self::T_PARA                 => 'para',
+        self::T_PASSO                => 'passo',
+        self::T_REPITA               => 'repita',
+        self::T_SAIR                 => 'sair',
+        self::T_SE                   => 'se',
+        self::T_SENAO                => 'senao',
+        self::T_TAREFA               => 'tarefa',
+        self::T_TESTE                => 'teste',
+        self::T_TEXTO                => 'texto',
+        self::T_VERDADEIRO           => 'verdadeiro',
+        self::T_VEZES                => 'vezes',
     ];
 
     public function getTokenName($x)
     {
-        return ListLexer::$tokenNames[$x];
+        return self::$tokenNames[$x];
     }
 
     /**

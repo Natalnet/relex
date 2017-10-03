@@ -33,7 +33,7 @@ class Parser
         if ($this->lookahead->type == $type) {
             $this->consume();
         } else {
-            throw new Exception("Expecting ".$type.", found ".$this->lookahead->type);
+            throw new Exception("Expecting ".$this->input->getTokenName($type).", found ".$this->lookahead->text);
         }
     }
 
