@@ -2,13 +2,15 @@
 
 namespace Natalnet\Relex;
 
+use Natalnet\Relex\ParseTree\ParseTree;
 use \Exception;
 
 class Parser
 {
     protected $input;
     protected $lookahead;
-    protected $symbolTable;
+    public $symbolTable;
+    public $parseTree;
 
     /**
      * Creates a new Parser instanse and consumes the first token.
@@ -18,6 +20,7 @@ class Parser
     public function __construct(Lexer $lexer)
     {
         $this->symbolTable = new SymbolTable();
+        $this->parseTree = new ParseTree();
         $this->input = $lexer;
         $this->consume();
     }
@@ -31,6 +34,7 @@ class Parser
     public function match($type)
     {
         if ($this->lookahead->type == $type) {
+            $this->parseTree->leaf($this->lookahead);
             $this->consume();
         } else {
             throw new Exception("Expecting ".$this->input->getTokenName($type).", found ".$this->lookahead->text);
