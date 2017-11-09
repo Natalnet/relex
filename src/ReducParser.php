@@ -100,6 +100,104 @@ class ReducParser extends Parser
         }
     }
 
+    private function matchNumeric()
+    {
+        switch ($this->lookahead->type) {
+            case ReducLexer::T_NUMBER:
+                $this->match(ReducLexer::T_NUMBER);
+                break;
+            case ReducLexer::T_IDENTIFIER:
+                if ($this->symbolTable->isDefined($this->lookahead->text)) {
+                    $symbol = $this->symbolTable->resolve($this->lookahead->text);
+                    if ($symbol->getType() ==Types::NUMBER_TYPE) {
+                        if ($symbol instanceof FunctionSymbol) {
+                            $this->matchFunction($symbol);
+                        } else {
+                            $this->matchVariable();
+                        }
+                    } else {
+                        throw new Exception("Type mismatch.");
+                    }
+                } else {
+                    throw new Exception("Symbol not defined");
+                }
+                break;
+            default:
+                throw new Exception("Expecting numeric value, found ".$this->lookahead->type);
+        }
+    }
+
+    public function matchSymbol()
+    {
+        switch (true) {
+            case $this->isFunction($this->lookahead):
+                return $this->matchFunction();
+                break;
+            case $this->isVariable($this->lookahead):
+                return $this->matchVariable();
+                break;
+            default:
+                throw new Exception("Expecting symbol, found ".$this->lookahead->type);
+                break;
+        }
+    }
+
+    public function isFunction(Token $token)
+    {
+        if ($token->type == ReducLexer::T_IDENTIFIER) {
+            if ($this->symbolTable->isDefined($token->text)) {
+                $symbol = $this->symbolTable->resolve($token->text);
+                return ($symbol instanceof FunctionSymbol);
+            }
+        }
+        return false;
+    }
+
+    public function matchFunction(FunctionSymbol $symbol = null)
+    {
+        if ($symbol == null) {
+            $symbol = $this->symbolTable->resolve($this->lookahead->text);
+        }
+        // $this->parseTree->tree('function');
+        $this->match(ReducLexer::T_IDENTIFIER);
+        $this->match(ReducLexer::T_OPEN_PARENTHESIS);
+        for ($i = 0; $i < $symbol->parameters; $i++) {
+            if ($i > 0) {
+                $this->match(ReducLexer::T_COMMA);
+            }
+            switch ($symbol->parameterTypes[$i]) {
+                case Types::NUMBER_TYPE:
+                    $this->matchNumeric();
+                    break;
+                case Types::BOOLEAN_TYPE:
+                    $this->matchBoolean();
+                    break;
+            }
+            // $this->match($symbol->parameterTypes[$i]);
+        }
+        $this->match(ReducLexer::T_CLOSE_PARENTHESIS);
+        // $this->parseTree->end()
+        return $symbol;
+    }
+
+    public function isVariable(Token $token)
+    {
+        if ($token->type == ReducLexer::T_IDENTIFIER) {
+            if ($this->symbolTable->isDefined($token->text)) {
+                $symbol = $this->symbolTable->resolve($token->text);
+                return ($symbol instanceof VariableSymbol);
+            }
+        }
+        return false;
+    }
+
+    public function matchVariable()
+    {
+        $symbol = $this->symbolTable->resolve($this->lookahead->text);
+        $this->match(ReducLexer::T_IDENTIFIER);
+        return $symbol;
+    }
+
     public function isNumber($token)
     {
         return $token->type == ReducLexer::T_NUMBER;
@@ -136,35 +234,15 @@ class ReducParser extends Parser
                 case ReducLexer::T_IDENTIFIER:
                     $continue = true;
                     $this->parseTree->tree('identifier');
-                    $id1 = $this->fetchIdentifier($this->lookahead->text);
-                    if ($id1 instanceof FunctionSymbol) {
-                        $this->match(ReducLexer::T_OPEN_PARENTHESIS);
-                        for ($i = 0; $i < $id1->parameters; $i++) {
-                            if ($i > 0) {
-                                $this->match(ReducLexer::T_COMMA);
-                            }
-                            $this->match($id1->parameterTypes[$i]);
-                        }
-                        $this->match(ReducLexer::T_CLOSE_PARENTHESIS);
-                    } elseif ($id1 instanceof VariableSymbol) {
+                    if ($this->isFunction($this->lookahead)) {
+                        $this->matchFunction();
+                    } elseif ($this->isVariable($this->lookahead)) {
+                        $this->matchVariable();
                         $this->match(ReducLexer::T_EQUALS);
-                        switch ($this->lookahead->type) {
-                            case ReducLexer::T_IDENTIFIER:
-                                $id2 = $this->fetchIdentifier($this->lookahead->text);
-                                if ($id2 instanceof FunctionSymbol) {
-                                    $this->match(ReducLexer::T_OPEN_PARENTHESIS);
-                                    for ($i = 0; $i < $id2->parameters; $i++) {
-                                        if ($i > 0) {
-                                            $this->match(ReducLexer::T_COMMA);
-                                        }
-                                        $this->match($id2->parameterTypes[$i]);
-                                    }
-                                    $this->match(ReducLexer::T_CLOSE_PARENTHESIS);
-                                }
-                                break;
-                            case ReducLexer::T_NUMBER:
-                                $this->match(ReducLexer::T_NUMBER);
-                                break;
+                        if ($this->isFunction($this->lookahead)) {
+                            $this->matchFunction();
+                        } elseif ($this->isNumber($this->lookahead)) {
+                            $this->match(ReducLexer::T_NUMBER);
                         }
                     }
                     $this->parseTree->end();
@@ -267,7 +345,8 @@ class ReducParser extends Parser
                 $this->matchCondition();
             }
         } elseif ($this->lookahead->type == ReducLexer::T_IDENTIFIER) {
-            $id1 = $this->fetchIdentifier($this->lookahead->text);
+            // $id1 = $this->fetchIdentifier($this->lookahead->text);
+            $id1 = $this->matchSymbol();
             $this->matchComparisonOperator();
             if ($this->lookahead->type == ReducLexer::T_IDENTIFIER) {
                 $id2 = $this->fetchIdentifier($this->lookahead->text);
