@@ -48,11 +48,13 @@ class Translator
     {
         $this->ifStatement = $statements['ifStatement'];
         $this->repeatStatement = $statements['repeatStatement'];
+        $this->whileStatement = $statements['whileStatement'];
     }
 
     public function setOperators(array $operators)
     {
-        $this->operators[ReducLexer::T_EQUALS_EQUALS] = $operators[ReducLexer::T_EQUALS_EQUALS];
+        $this->operators = $operators;
+        // $this->operators[ReducLexer::T_EQUALS_EQUALS] = $operators[ReducLexer::T_EQUALS_EQUALS];
     }
 
     public function setFunctions(array $functions)
@@ -157,10 +159,10 @@ class Translator
                 case 'whileStatement':
                     $matches = [
                         'condicao' => $this->process($node->getChildren()[2]),
-                        'comandos' => $this->process($node->getChildren()[4])
+                        'comandos' => $this->process($node->getChildren()[6])
                     ];
                     $times = $this->process($node->getChildren()[1]);
-                    return str_replace(array_keys($matches), array_values($matches), $this->repeatStatement);
+                    return str_replace(array_keys($matches), array_values($matches), $this->whileStatement);
                     break;
                 // default:
                 //     // code...

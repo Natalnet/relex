@@ -209,9 +209,16 @@ class ReducParser extends Parser
         // $this->match(ReducLexer::T_NUMBER);
         if ($this->lookahead->type == ReducLexer::T_IDENTIFIER) {
             $id1 = $this->fetchIdentifier($this->lookahead->text);
-            // if ($id1->getType() != ReducLexer::T_NUMBER) {
-            //     throw new Exception("Type mismatch");
-            // }
+            if ($id1 instanceof FunctionSymbol) {
+                $this->match(ReducLexer::T_OPEN_PARENTHESIS);
+                for ($i = 0; $i < $id1->parameters; $i++) {
+                    if ($i > 0) {
+                        $this->match(ReducLexer::T_COMMA);
+                    }
+                    $this->match($id1->parameterTypes[$i]);
+                }
+                $this->match(ReducLexer::T_CLOSE_PARENTHESIS);
+            }
         } elseif ($this->isNumber($this->lookahead)) {
             $this->match(ReducLexer::T_NUMBER);
         }
@@ -224,6 +231,7 @@ class ReducParser extends Parser
 
     public function whileStatement()
     {
+        $this->parseTree->tree('whileStatement');
         $this->match(ReducLexer::T_ENQUANTO);
         $this->match(ReducLexer::T_OPEN_PARENTHESIS);
         $this->matchCondition();
@@ -232,6 +240,7 @@ class ReducParser extends Parser
         $this->match(ReducLexer::T_OPEN_CURLY_BRACE);
         $this->commands();
         $this->match(ReducLexer::T_CLOSE_CURLY_BRACE);
+        $this->parseTree->end();
     }
 
     public function doStatement()
