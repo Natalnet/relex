@@ -148,16 +148,23 @@ class ReducParser extends Parser
                         $this->match(ReducLexer::T_CLOSE_PARENTHESIS);
                     } elseif ($id1 instanceof VariableSymbol) {
                         $this->match(ReducLexer::T_EQUALS);
-                        $id2 = $this->fetchIdentifier($this->lookahead->text);
-                        if ($id2 instanceof FunctionSymbol) {
-                            $this->match(ReducLexer::T_OPEN_PARENTHESIS);
-                            for ($i = 0; $i < $id2->parameters; $i++) {
-                                if ($i > 0) {
-                                    $this->match(ReducLexer::T_COMMA);
+                        switch ($this->lookahead->type) {
+                            case ReducLexer::T_IDENTIFIER:
+                                $id2 = $this->fetchIdentifier($this->lookahead->text);
+                                if ($id2 instanceof FunctionSymbol) {
+                                    $this->match(ReducLexer::T_OPEN_PARENTHESIS);
+                                    for ($i = 0; $i < $id2->parameters; $i++) {
+                                        if ($i > 0) {
+                                            $this->match(ReducLexer::T_COMMA);
+                                        }
+                                        $this->match($id2->parameterTypes[$i]);
+                                    }
+                                    $this->match(ReducLexer::T_CLOSE_PARENTHESIS);
                                 }
-                                $this->match($id2->parameterTypes[$i]);
-                            }
-                            $this->match(ReducLexer::T_CLOSE_PARENTHESIS);
+                                break;
+                            case ReducLexer::T_NUMBER:
+                                $this->match(ReducLexer::T_NUMBER);
+                                break;
                         }
                     }
                     $this->parseTree->end();
