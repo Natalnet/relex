@@ -159,8 +159,6 @@ class ReducParser extends Parser
                             }
                             $this->match(ReducLexer::T_CLOSE_PARENTHESIS);
                         }
-                        $this->match(ReducLexer::T_OPEN_PARENTHESIS);
-                        $this->match(ReducLexer::T_CLOSE_PARENTHESIS);
                     }
                     $this->parseTree->end();
                     break;
