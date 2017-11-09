@@ -186,9 +186,9 @@ class Translator
                     return $this->operators[ReducLexer::T_LESS_THAN_EQUAL];
                     break;
                 case ReducLexer::T_GREATER_THAN:
-                    return $this->operators[T_GREATER_THAN];
+                    return $this->operators[ReducLexer::T_GREATER_THAN];
                 case ReducLexer::T_GREATER_THAN_EQUAL:
-                    return $this->operators[T_GREATER_THAN_EQUAL];
+                    return $this->operators[ReducLexer::T_GREATER_THAN_EQUAL];
                 case ReducLexer::T_NUMBER:
                     return $node->getValue()->text;
                     break;
