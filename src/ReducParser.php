@@ -169,6 +169,9 @@ class ReducParser extends Parser
                 case Types::NUMBER_TYPE:
                     $this->matchNumeric();
                     break;
+                case Types::STRING_TYPE:
+                    $this->match(ReducLexer::T_STRING);
+                    break;
                 case Types::BOOLEAN_TYPE:
                     $this->matchBoolean();
                     break;
