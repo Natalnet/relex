@@ -17,6 +17,7 @@ class Translator
 
     protected $mainFunction;
     protected $ifStatement;
+    protected $repeatStatement;
     protected $constTrue;
     protected $constFalse;
     protected $operators = [
@@ -39,9 +40,10 @@ class Translator
         $this->mainFunction = $mainFunction;
     }
 
-    public function setControlFlowStatements($ifStatement)
+    public function setControlFlowStatements($statements)
     {
-        $this->ifStatement = $ifStatement;
+        $this->ifStatement = $statements['ifStatement'];
+        $this->repeatStatement = $statements['repeatStatement'];
     }
 
     public function setOperators(array $operators)
@@ -99,6 +101,14 @@ class Translator
                         $temp = preg_replace('/var'.($k).'\(([a-zA-Z]+)\)/', $node->getChildren()[$i]->getValue()->text, $temp);
                     }
                     return $temp;
+                    break;
+                case 'repeatStatement':
+                    $matches = [
+                        'var' => $this->process($node->getChildren()[1]),
+                        'comandos' => $this->process($node->getChildren()[4])
+                    ];
+                    $times = $this->process($node->getChildren()[1]);
+                    return str_replace(array_keys($matches), array_values($matches), $this->repeatStatement);
                     break;
                 // default:
                 //     // code...

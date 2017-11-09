@@ -125,6 +125,10 @@ class ReducParser extends Parser
                     $continue = true;
                     $this->doStatement();
                     break;
+                case ReducLexer::T_REPITA:
+                    $continue = true;
+                    $this->repeatStatement();
+                    break;
                 case ReducLexer::T_IDENTIFIER:
                     $continue = true;
                     $this->parseTree->tree('identifier');
@@ -171,6 +175,18 @@ class ReducParser extends Parser
                 $this->match(ReducLexer::T_CLOSE_CURLY_BRACE);
             }
         }
+        $this->parseTree->end();
+    }
+
+    public function repeatStatement()
+    {
+        $this->parseTree->tree('repeatStatement');
+        $this->match(ReducLexer::T_REPITA);
+        $this->match(ReducLexer::T_NUMBER);
+        $this->match(ReducLexer::T_VEZES);
+        $this->match(ReducLexer::T_OPEN_CURLY_BRACE);
+        $this->commands();
+        $this->match(ReducLexer::T_CLOSE_CURLY_BRACE);
         $this->parseTree->end();
     }
 
