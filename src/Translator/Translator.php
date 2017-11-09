@@ -164,6 +164,9 @@ class Translator
                 case ReducLexer::T_NUMBER:
                     return $node->getValue()->text;
                     break;
+                case ReducLexer::T_IDENTIFIER:
+                    return $node->getValue()->text;
+                    break;
             }
         }
     }

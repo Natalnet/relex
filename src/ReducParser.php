@@ -199,7 +199,15 @@ class ReducParser extends Parser
     {
         $this->parseTree->tree('repeatStatement');
         $this->match(ReducLexer::T_REPITA);
-        $this->match(ReducLexer::T_NUMBER);
+        // $this->match(ReducLexer::T_NUMBER);
+        if ($this->lookahead->type == ReducLexer::T_IDENTIFIER) {
+            $id1 = $this->fetchIdentifier($this->lookahead->text);
+            // if ($id1->getType() != ReducLexer::T_NUMBER) {
+            //     throw new Exception("Type mismatch");
+            // }
+        } elseif ($this->isNumber($this->lookahead)) {
+            $this->match(ReducLexer::T_NUMBER);
+        }
         $this->match(ReducLexer::T_VEZES);
         $this->match(ReducLexer::T_OPEN_CURLY_BRACE);
         $this->commands();
