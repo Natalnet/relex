@@ -175,6 +175,8 @@ class ReducParser extends Parser
                 case Types::BOOLEAN_TYPE:
                     $this->matchBoolean();
                     break;
+                default:
+                    throw new Exception('Unknown exception');
             }
             // $this->match($symbol->parameterTypes[$i]);
         }
@@ -247,6 +249,8 @@ class ReducParser extends Parser
                         } elseif ($this->isNumber($this->lookahead)) {
                             $this->match(ReducLexer::T_NUMBER);
                         }
+                    } else {
+                        throw new Exception($this->lookahead->text.' not defined.');
                     }
                     $this->parseTree->end();
                     break;
