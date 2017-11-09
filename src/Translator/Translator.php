@@ -23,7 +23,11 @@ class Translator
     protected $operators = [
         ReducLexer::T_EQUALS_EQUALS => ''
     ];
+    protected $variablesDeclaration = [
+        'number' => 'float variavel = valor;'
+    ];
     protected $functions = [];
+    protected $callFunction = "funcao(); ";
 
     /**
      * summary
@@ -58,14 +62,33 @@ class Translator
 
     public function translate()
     {
-        $program = $this->parseTree->getNode();
-        $this->translatedString = $this->process($program);
+        $node = $this->parseTree->getNode();
+        // var_dump($node);
+        // $this->translatedString = $this->process($program);
+        $this->translatedString = "";
+        foreach ($node->getChildren() as $child) {
+            $this->translatedString .= $this->process($child);
+        }
     }
 
     public function process(NodeInterface $node)
     {
+        // var_dump($node);
         if (!($node->getValue() instanceof Token)) {
             switch ($node->getValue()) {
+                case 'symbols':
+                    $temp = "";
+                    foreach ($node->getChildren() as $child) {
+                        $temp .= $this->process($child); //$this->process($child);
+                    }
+                    return $temp;
+                    break;
+                case 'declareNumber':
+                    $matches = [
+                        'variavel' => $node->getChildren()[1]->getValue()->text,
+                        'valor' => $node->getChildren()[3]->getValue()->text
+                    ];
+                    return str_replace(array_keys($matches), array_values($matches), $this->variablesDeclaration['number']);
                 case 'program':
                     return str_replace('comandos', $this->process($node->getChildren()[1]), $this->mainFunction);
                     break;
@@ -96,11 +119,24 @@ class Translator
                     return $temp;
                     break;
                 case 'identifier':
-                    $temp = $this->functions[$node->getChildren()[0]->getValue()->text];
-                    for ($i = 2, $k = 1; $i < count($node->getChildren())-1; $i+=2, $k++) {
-                        $temp = preg_replace('/var'.($k).'\(([a-zA-Z]+)\)/', $node->getChildren()[$i]->getValue()->text, $temp);
+                    if ($node->getChildren()[1]->getValue()->text == '=') {
+                        $temp = $node->getChildren()[0]->getValue()->text;
+                        $temp .= " = ";
+
+                        $function = $this->functions[$node->getChildren()[2]->getValue()->text];
+                        for ($i = 4, $k = 1; $i < count($node->getChildren())-1; $i+=2, $k++) {
+                            $function = preg_replace('/var'.($k).'\(([a-zA-Z]+)\)/', $node->getChildren()[$i]->getValue()->text, $temp);
+                        }
+
+                        $temp .= $function;
+                        return $temp;
+                    } else {
+                        $temp = $this->functions[$node->getChildren()[0]->getValue()->text];
+                        for ($i = 2, $k = 1; $i < count($node->getChildren())-1; $i+=2, $k++) {
+                            $temp = preg_replace('/var'.($k).'\(([a-zA-Z]+)\)/', $node->getChildren()[$i]->getValue()->text, $temp);
+                        }
+                        return $temp;
                     }
-                    return $temp;
                     break;
                 case 'repeatStatement':
                     $matches = [

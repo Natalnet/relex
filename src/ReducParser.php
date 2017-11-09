@@ -8,23 +8,26 @@ class ReducParser extends Parser
 {
     public function program()
     {
-        $this->parseTree->value('program');
+        $this->parseTree->value('code');
         $this->symbols();
+        $this->parseTree->tree('program');
         $this->match(ReducLexer::T_INICIO);
         $this->commands();
         $this->match(ReducLexer::T_FIM);
         $this->match(ReducLexer::EOF_TYPE);
+        $this->parseTree->end();
     }
 
     private function symbols()
     {
+        $this->parseTree->tree('symbols');
         do {
             $continue = false;
 
             switch ($this->lookahead->type) {
                 case ReducLexer::T_NUMERO:
                     $continue = true;
-                    $this->parseTree->tree('number');
+                    $this->parseTree->tree('declareNumber');
                     $this->match(ReducLexer::T_NUMERO);
                     $this->varDeclaration(Types::NUMBER_TYPE);
                     $this->match(ReducLexer::T_EQUALS);
@@ -33,7 +36,7 @@ class ReducParser extends Parser
                     break;
                 case ReducLexer::T_TEXTO:
                     $continue = true;
-                    $this->parseTree->tree('text');
+                    $this->parseTree->tree('declareText');
                     $this->match(ReducLexer::T_TEXTO);
                     $this->varDeclaration(Types::STRING_TYPE);
                     $this->match(ReducLexer::T_EQUALS);
@@ -42,7 +45,7 @@ class ReducParser extends Parser
                     break;
                 case ReducLexer::T_BOOLEANO:
                     $continue = true;
-                    $this->parseTree->tree('boolean');
+                    $this->parseTree->tree('declareBoolean');
                     $this->match(ReducLexer::T_BOOLEANO);
                     $this->varDeclaration(Types::BOOLEAN_TYPE);
                     $this->match(ReducLexer::T_EQUALS);
@@ -59,6 +62,7 @@ class ReducParser extends Parser
                     break;
             }
         } while ($continue);
+        $this->parseTree->end();
     }
 
     private function varDeclaration($type)
@@ -141,6 +145,21 @@ class ReducParser extends Parser
                             }
                             $this->match($id1->parameterTypes[$i]);
                         }
+                        $this->match(ReducLexer::T_CLOSE_PARENTHESIS);
+                    } elseif ($id1 instanceof VariableSymbol) {
+                        $this->match(ReducLexer::T_EQUALS);
+                        $id2 = $this->fetchIdentifier($this->lookahead->text);
+                        if ($id2 instanceof FunctionSymbol) {
+                            $this->match(ReducLexer::T_OPEN_PARENTHESIS);
+                            for ($i = 0; $i < $id2->parameters; $i++) {
+                                if ($i > 0) {
+                                    $this->match(ReducLexer::T_COMMA);
+                                }
+                                $this->match($id2->parameterTypes[$i]);
+                            }
+                            $this->match(ReducLexer::T_CLOSE_PARENTHESIS);
+                        }
+                        $this->match(ReducLexer::T_OPEN_PARENTHESIS);
                         $this->match(ReducLexer::T_CLOSE_PARENTHESIS);
                     }
                     $this->parseTree->end();
