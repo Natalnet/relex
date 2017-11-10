@@ -124,8 +124,9 @@ class Translator
                     break;
                 case 'identifier':
                     if ($node->getChildren()[1]->getValue()->text == '=') {
-                        var_dump($node->getChildren()[2]->getValue()->text);
-                        if (array_key_exists($node->getChildren()[2]->getValue()->text, $this->functions)) {
+                        if ($node->getChildren()[2]->getValue() == 'identifier') {
+                            $this->process($node->getChildren()[2]);
+                        } elseif (array_key_exists($node->getChildren()[2]->getValue()->text, $this->functions)) {
                             $function = $this->functions[$node->getChildren()[2]->getValue()->text];
                             for ($i = 4, $k = 1; $i < count($node->getChildren())-1; $i+=2, $k++) {
                                 $function = preg_replace('/var'.($k).'\(([a-zA-Z]+)\)/', $node->getChildren()[$i]->getValue()->text, $function);
