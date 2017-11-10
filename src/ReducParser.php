@@ -158,7 +158,7 @@ class ReducParser extends Parser
         if ($symbol == null) {
             $symbol = $this->symbolTable->resolve($this->lookahead->text);
         }
-        $this->parseTree->tree('identifier');
+        // $this->parseTree->tree('function');
         $this->match(ReducLexer::T_IDENTIFIER);
         $this->match(ReducLexer::T_OPEN_PARENTHESIS);
         for ($i = 0; $i < $symbol->parameters; $i++) {
@@ -181,7 +181,7 @@ class ReducParser extends Parser
             // $this->match($symbol->parameterTypes[$i]);
         }
         $this->match(ReducLexer::T_CLOSE_PARENTHESIS);
-        $this->parseTree->end();
+        // $this->parseTree->end()
         return $symbol;
     }
 
@@ -372,8 +372,7 @@ class ReducParser extends Parser
             $id1 = $this->matchSymbol();
             $this->matchComparisonOperator();
             if ($this->lookahead->type == ReducLexer::T_IDENTIFIER) {
-                // $id2 = $this->fetchIdentifier($this->lookahead->text);
-                $id2 = $this->matchSymbol();
+                $id2 = $this->fetchIdentifier($this->lookahead->text);
                 if ($id1->getType() != $id2->getType()) {
                     throw new Exception("Type mismatch");
                 }

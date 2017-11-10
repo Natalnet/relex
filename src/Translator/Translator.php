@@ -124,13 +124,7 @@ class Translator
                     break;
                 case 'identifier':
                     if ($node->getChildren()[1]->getValue()->text == '=') {
-                        if ($node->getChildren()[2]->getValue() == 'identifier') {
-                            $matches = [
-                                'variavel' => $node->getChildren()[0]->getValue()->text,
-                                'valor' => $this->process($node->getChildren()[2]);
-                            ];
-                            return str_replace(array_keys($matches), array_values($matches), $this->variablesDeclaration[Types::NUMBER_TYPE]);
-                        } elseif (array_key_exists($node->getChildren()[2]->getValue()->text, $this->functions)) {
+                        if (array_key_exists($node->getChildren()[2]->getValue()->text, $this->functions)) {
                             $function = $this->functions[$node->getChildren()[2]->getValue()->text];
                             for ($i = 4, $k = 1; $i < count($node->getChildren())-1; $i+=2, $k++) {
                                 $function = preg_replace('/var'.($k).'\(([a-zA-Z]+)\)/', $node->getChildren()[$i]->getValue()->text, $function);
