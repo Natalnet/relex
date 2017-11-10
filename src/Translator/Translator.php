@@ -124,6 +124,7 @@ class Translator
                     break;
                 case 'identifier':
                     if ($node->getChildren()[1]->getValue()->text == '=') {
+                        var_dump($node->getChildren()[2]->getValue()->text);
                         if (array_key_exists($node->getChildren()[2]->getValue()->text, $this->functions)) {
                             $function = $this->functions[$node->getChildren()[2]->getValue()->text];
                             for ($i = 4, $k = 1; $i < count($node->getChildren())-1; $i+=2, $k++) {
