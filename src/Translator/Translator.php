@@ -195,6 +195,10 @@ class Translator
                 case ReducLexer::T_IDENTIFIER:
                     return $node->getValue()->text;
                     break;
+                case ReducLexer::T_OPEN_PARENTHESIS:
+                case ReducLexer::T_CLOSE_PARENTHESIS:
+                    return $node->getValue()->text;
+                    break;
             }
         }
     }

@@ -246,8 +246,14 @@ class ReducParser extends Parser
                         $this->match(ReducLexer::T_EQUALS);
                         if ($this->isFunction($this->lookahead)) {
                             $this->matchFunction();
+                        } elseif ($this->isVariable($this->lookahead)) {
+                            $this->matchVariable();
                         } elseif ($this->isNumber($this->lookahead)) {
                             $this->match(ReducLexer::T_NUMBER);
+                        } elseif ($this->isBoolean($this->lookahead)) {
+                            $this->matchBoolean();
+                        } else {
+                            $this->match(ReducLexer::T_STRING);
                         }
                     } else {
                         throw new Exception($this->lookahead->text.' not defined.');
