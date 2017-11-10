@@ -199,7 +199,9 @@ class ReducParser extends Parser
     public function matchVariable()
     {
         $symbol = $this->symbolTable->resolve($this->lookahead->text);
+        // $this->parseTree->tree($symbol->getType().'TypeVariable');
         $this->match(ReducLexer::T_IDENTIFIER);
+        // $this->parseTree->end();
         return $symbol;
     }
 
@@ -248,8 +250,16 @@ class ReducParser extends Parser
                             $this->matchFunction();
                         } elseif ($this->isVariable($this->lookahead)) {
                             $this->matchVariable();
+                            if ($this->isMathOperator($this->lookahead)) {
+                                $this->matchMathOperator();
+                                $this->matchNumeric();
+                            }
                         } elseif ($this->isNumber($this->lookahead)) {
                             $this->match(ReducLexer::T_NUMBER);
+                            if ($this->isMathOperator($this->lookahead)) {
+                                $this->matchMathOperator();
+                                $this->matchNumeric();
+                            }
                         } elseif ($this->isBoolean($this->lookahead)) {
                             $this->matchBoolean();
                         } else {
@@ -471,6 +481,39 @@ class ReducParser extends Parser
 
             default:
                 throw new Exception("Expecting boolean operator, found ".$this->lookahead->type);
+        }
+    }
+
+    public function isMathOperator(Token $token)
+    {
+        switch ($token->type) {
+            case ReducLexer::T_PLUS:
+            case ReducLexer::T_MINUS:
+            case ReducLexer::T_MULTIPLY:
+            case ReducLexer::T_DIVIDE:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public function matchMathOperator()
+    {
+        switch ($this->lookahead->type) {
+            case ReducLexer::T_PLUS:
+                $this->match(ReducLexer::T_PLUS);
+                break;
+            case ReducLexer::T_MINUS:
+                $this->match(ReducLexer::T_MINUS);
+                break;
+            case ReducLexer::T_MULTIPLY:
+                $this->match(ReducLexer::T_MULTIPLY);
+                break;
+            case ReducLexer::T_DIVIDE:
+                $this->match(ReducLexer::T_DIVIDE);
+                break;
+            default:
+                throw new Exception("Expecting math operator, found ".$this->lookahead->text);
         }
     }
 }
