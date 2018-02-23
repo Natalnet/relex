@@ -1,0 +1,9 @@
+numero var = 8
+texto vart = "ola mundo"
+booleano varb = verdadeiro
+
+inicio
+se (var + var > 3) entao {
+
+}
+fim
