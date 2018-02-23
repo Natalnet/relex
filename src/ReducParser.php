@@ -27,27 +27,27 @@ class ReducParser extends Parser
             switch ($this->fetchLookaheadType()) {
                 case ReducLexer::T_NUMERO:
                     $continue = true;
-                    $this->parseTree->tree('declareNumber');
+                    $this->parseTree->tree('defineNumber');
                     $this->match(ReducLexer::T_NUMERO);
-                    $this->varDeclaration(Types::NUMBER_TYPE);
+                    $this->varDefinition(Types::NUMBER_TYPE);
                     $this->match(ReducLexer::T_EQUALS);
                     $this->match(ReducLexer::T_NUMBER);
                     $this->parseTree->end();
                     break;
                 case ReducLexer::T_TEXTO:
                     $continue = true;
-                    $this->parseTree->tree('declareText');
+                    $this->parseTree->tree('defineText');
                     $this->match(ReducLexer::T_TEXTO);
-                    $this->varDeclaration(Types::STRING_TYPE);
+                    $this->varDefinition(Types::STRING_TYPE);
                     $this->match(ReducLexer::T_EQUALS);
                     $this->match(ReducLexer::T_STRING);
                     $this->parseTree->end();
                     break;
                 case ReducLexer::T_BOOLEANO:
                     $continue = true;
-                    $this->parseTree->tree('declareBoolean');
+                    $this->parseTree->tree('defineBoolean');
                     $this->match(ReducLexer::T_BOOLEANO);
-                    $this->varDeclaration(Types::BOOLEAN_TYPE);
+                    $this->varDefinition(Types::BOOLEAN_TYPE);
                     $this->match(ReducLexer::T_EQUALS);
                     $this->matchBoolean();
                     $this->parseTree->end();
@@ -65,9 +65,9 @@ class ReducParser extends Parser
         $this->parseTree->end();
     }
 
-    private function varDeclaration($type)
+    private function varDefinition($type)
     {
-        $name = $this->lookahead->text;
+        $name = $this->fetchLookaheadToken()->text;
         $this->match(ReducLexer::T_IDENTIFIER);
         $variable = new VariableSymbol($name, $type);
         $this->symbolTable->define($variable);
@@ -222,9 +222,12 @@ class ReducParser extends Parser
         return false;
     }
 
-    public function matchVariable()
+    public function matchVariable($type = null)
     {
-        $symbol = $this->symbolTable->resolve($this->lookahead->text);
+        $symbol = $this->symbolTable->resolve($this->fetchLookaheadToken()->text);
+        if ($type && $symbol->getType() != $type) {
+            throw new Exception('Type mismatch.');
+        }
         // $this->parseTree->tree($symbol->getType().'TypeVariable');
         $this->parseTree->tree('identifier');
         $this->match(ReducLexer::T_IDENTIFIER);
@@ -321,16 +324,16 @@ class ReducParser extends Parser
         $this->match(ReducLexer::T_OPEN_CURLY_BRACE);
         $this->commands();
         $this->match(ReducLexer::T_CLOSE_CURLY_BRACE);
-        if ($this->fetchLookaheadType() == ReducLexer::T_SENAO) {
-            $this->match(ReducLexer::T_SENAO);
-            if ($this->fetchLookaheadType() == ReducLexer::T_SE) {
-                $this->ifStatement();
-            } else {
-                $this->match(ReducLexer::T_OPEN_CURLY_BRACE);
-                $this->commands();
-                $this->match(ReducLexer::T_CLOSE_CURLY_BRACE);
-            }
-        }
+        // if ($this->fetchLookaheadType() == ReducLexer::T_SENAO) {
+        //     $this->match(ReducLexer::T_SENAO);
+        //     if ($this->fetchLookaheadType() == ReducLexer::T_SE) {
+        //         $this->ifStatement();
+        //     } else {
+        //         $this->match(ReducLexer::T_OPEN_CURLY_BRACE);
+        //         $this->commands();
+        //         $this->match(ReducLexer::T_CLOSE_CURLY_BRACE);
+        //     }
+        // }
         $this->parseTree->end();
     }
 
@@ -390,41 +393,11 @@ class ReducParser extends Parser
     public function matchCondition()
     {
         $this->parseTree->tree('condition');
-        if ($this->fetchLookaheadType() == ReducLexer::T_OPEN_PARENTHESIS) {
-            $this->match(ReducLexer::T_OPEN_PARENTHESIS);
-            $this->matchCondition();
-            $this->match(ReducLexer::T_CLOSE_PARENTHESIS);
-            if ($this->isLogicalOperator()) {
-                $this->matchLogicalOperator();
-                $this->matchCondition();
-            }
-        } elseif ($this->fetchLookaheadType() == ReducLexer::T_IDENTIFIER) {
-            // $id1 = $this->fetchIdentifier($this->lookahead->text);
-            $id1 = $this->matchSymbol();
+        if ($this->speculateMathOperation()) {
+            $this->matchMathOperation();
             $this->matchComparisonOperator();
-            if ($this->fetchLookaheadType() == ReducLexer::T_IDENTIFIER) {
-                // $id2 = $this->fetchIdentifier($this->lookahead->text);
-                $id2 = $this->matchSymbol();
-                if ($id1->getType() != $id2->getType()) {
-                    throw new Exception("Type mismatch");
-                }
-            } elseif ($this->fetchLookaheadType() == ReducLexer::T_NUMBER) {
-                if ($id1->getType() != Types::NUMBER_TYPE) {
-                    throw new Exception("Type mismatch");
-                }
-                $this->match(ReducLexer::T_NUMBER);
-            } elseif ($this->fetchLookaheadType() == ReducLexer::T_STRING) {
-                if ($id1->getType() != Types::STRING_TYPE) {
-                    throw new Exception("Type mismatch");
-                }
-                $this->match(ReducLexer::T_STRING);
-            } elseif ($this->isBoolean($this->lookahead)) {
-                if ($id1->getType() != Types::BOOLEAN_TYPE) {
-                    throw new Exception("Type mismatch");
-                }
-                $this->matchBoolean();
-            }
-        } elseif ($this->isNumber($this->lookahead)) {
+            $this->match(ReducLexer::T_NUMBER);
+        } elseif ($this->isNumber($this->fetchLookaheadToken())) {
             $this->match(ReducLexer::T_NUMBER);
             $this->matchComparisonOperator();
             switch ($this->fetchLookaheadType()) {
@@ -441,13 +414,116 @@ class ReducParser extends Parser
                 default:
                     throw new Exception("Type mismatch. Expecting a number.");
             }
-        } elseif ($this->isBoolean($this->lookahead)) {
-            $this->matchBoolean();
-        } elseif ($this->fetchLookaheadType() == ReducLexer::T_NEGATE) {
-            $this->match(ReducLexer::T_NEGATE);
-            $this->matchCondition();
         } else {
-            throw new Exception("Unexpected '".$this->lookahead->text."'.");
+            throw new Exception("Unexpected '".$this->fetchLookaheadToken()->text."'.");
+        }
+
+
+        // if ($this->fetchLookaheadType() == ReducLexer::T_OPEN_PARENTHESIS) {
+        //     $this->match(ReducLexer::T_OPEN_PARENTHESIS);
+        //     $this->matchCondition();
+        //     $this->match(ReducLexer::T_CLOSE_PARENTHESIS);
+        //     if ($this->isLogicalOperator()) {
+        //         $this->matchLogicalOperator();
+        //         $this->matchCondition();
+        //     }
+        // } elseif ($this->fetchLookaheadType() == ReducLexer::T_IDENTIFIER) {
+        //     // $id1 = $this->fetchIdentifier($this->lookahead->text);
+        //     $id1 = $this->matchSymbol();
+        //     $this->matchComparisonOperator();
+        //     if ($this->fetchLookaheadType() == ReducLexer::T_IDENTIFIER) {
+        //         // $id2 = $this->fetchIdentifier($this->lookahead->text);
+        //         $id2 = $this->matchSymbol();
+        //         if ($id1->getType() != $id2->getType()) {
+        //             throw new Exception("Type mismatch");
+        //         }
+        //     } elseif ($this->fetchLookaheadType() == ReducLexer::T_NUMBER) {
+        //         if ($id1->getType() != Types::NUMBER_TYPE) {
+        //             throw new Exception("Type mismatch");
+        //         }
+        //         $this->match(ReducLexer::T_NUMBER);
+        //     } elseif ($this->fetchLookaheadType() == ReducLexer::T_STRING) {
+        //         if ($id1->getType() != Types::STRING_TYPE) {
+        //             throw new Exception("Type mismatch");
+        //         }
+        //         $this->match(ReducLexer::T_STRING);
+        //     } elseif ($this->isBoolean($this->lookahead)) {
+        //         if ($id1->getType() != Types::BOOLEAN_TYPE) {
+        //             throw new Exception("Type mismatch");
+        //         }
+        //         $this->matchBoolean();
+        //     }
+        // } elseif ($this->speculateMathOperation()) {
+        //     $this->matchMathOperation();
+        //     $this->matchComparisonOperator();
+        //     $this->match(ReducLexer::T_NUMBER);
+        // } elseif ($this->isNumber($this->fetchLookaheadToken())) {
+        //     $this->match(ReducLexer::T_NUMBER);
+        //     $this->matchComparisonOperator();
+        //     switch ($this->fetchLookaheadType()) {
+        //         case ReducLexer::T_NUMBER:
+        //             $this->match(ReducLexer::T_NUMBER);
+        //             break;
+        //         case ReducLexer::T_IDENTIFIER:
+        //             $id1 = $this->fetchIdentifier($this->lookahead->text);
+        //             if ($id1->getType() != Types::NUMBER_TYPE) {
+        //                 throw new Exception("Type mismatch. Expecting an identifier of type number.");
+        //             }
+        //             break;
+
+        //         default:
+        //             throw new Exception("Type mismatch. Expecting a number.");
+        //     }
+        // } elseif ($this->isBoolean($this->lookahead)) {
+        //     $this->matchBoolean();
+        // } elseif ($this->fetchLookaheadType() == ReducLexer::T_NEGATE) {
+        //     $this->match(ReducLexer::T_NEGATE);
+        //     $this->matchCondition();
+        // } else {
+        //     throw new Exception("Unexpected '".$this->lookahead->text."'.");
+        // }
+        $this->parseTree->end();
+    }
+
+    private function speculateMathOperation()
+    {
+        $success = true;
+        $this->mark();
+        try {
+            $this->matchMathOperation();
+        } catch (\Exception $e) {
+            $success = false;
+        }
+        $this->release();
+        return $success;
+    }
+
+    private function matchMathOperation()
+    {
+        $this->parseTree->tree('math-operation');
+        switch ($this->fetchLookaheadType()) {
+            case ReducLexer::T_IDENTIFIER:
+                if ($this->isVariable($this->fetchLookaheadToken())) {
+                    $this->matchVariable(Types::NUMBER_TYPE);
+                    $this->matchMathOperator();
+                    if ($this->isVariable($this->fetchLookaheadToken())) {
+                        $this->matchVariable(Types::NUMBER_TYPE);
+                    } else {
+                        $this->match(ReducLexer::T_NUMBER);
+                    }
+                } else {
+                    throw new Exception("Identifier not defined or not numeric.");
+                }
+                break;
+            case ReducLexer::T_NUMBER:
+                $this->match(ReducLexer::T_NUMBER);
+                $this->matchMathOperator();
+                $this->match(ReducLexer::T_NUMBER);
+                break;
+
+            default:
+                throw new Exception("Unexpected token.");
+                break;
         }
         $this->parseTree->end();
     }
@@ -545,7 +621,7 @@ class ReducParser extends Parser
                 $this->match(ReducLexer::T_DIVIDE);
                 break;
             default:
-                throw new Exception("Expecting math operator, found ".$this->lookahead->text);
+                throw new Exception("Expecting math operator, found ".$this->fetchLookaheadToken()->text);
         }
     }
 }

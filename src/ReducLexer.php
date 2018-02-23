@@ -81,6 +81,8 @@ class ReducLexer extends Lexer
         self::T_OPEN_CURLY_BRACE     => '{',
         self::T_CLOSE_CURLY_BRACE    => '}',
 
+        self::T_IDENTIFIER           => 'identificador',
+
         self::T_ATE                  => 'ate',
         self::T_BOOLEANO             => 'booleano',
         self::T_DE                   => 'de',

@@ -103,6 +103,27 @@ class Translator
                     }
                     return $temp;
                     break;
+                case 'command':
+                    $temp = "";
+                    foreach ($node->getChildren() as $child) {
+                        $temp .= $this->process($child);
+                        // var_dump($temp);
+                    }
+                    return $temp;
+                    break;
+                case 'useFunction':
+                    return $this->process($node->getChildren()[0]);
+                    break;
+                case 'useVariable':
+                    $matches = [
+                        'variavel' => $this->process($node->getChildren()[0]),
+                        'valor' => ""
+                    ];
+                    for ($i = 2; $i < sizeof($node->getChildren()); $i++) {
+                        $matches['valor'] .= $this->process($node->getChildren()[$i]);
+                    }
+                    return str_replace(array_keys($matches), array_values($matches), "variavel = valor;");
+                    break;
                 case 'ifStatement':
                     $matches = [
                         'condicao' => $this->process($node->getChildren()[2]),
@@ -123,42 +144,20 @@ class Translator
                     return $temp;
                     break;
                 case 'identifier':
-                    if ($node->getChildren()[1]->getValue()->text == '=') {
-                        if (array_key_exists($node->getChildren()[2]->getValue()->text, $this->functions)) {
-                            $function = $this->functions[$node->getChildren()[2]->getValue()->text];
-                            for ($i = 4, $k = 1; $i < count($node->getChildren())-1; $i+=2, $k++) {
-                                $function = preg_replace('/var'.($k).'\(([a-zA-Z]+)\)/', $node->getChildren()[$i]->getValue()->text, $function);
-                            }
-
-                            $matches = [
-                                'variavel' => $node->getChildren()[0]->getValue()->text,
-                                'valor' => $function
-                            ];
-                            return str_replace(array_keys($matches), array_values($matches), $this->variablesDeclaration[Types::NUMBER_TYPE]);
-                        } else {
-                            // $this->processVariableUse($node->getChildren()[0]);
-                            if (sizeof($node->getChildren()) == 5) {
-                                $tmp = $node->getChildren()[0]->getValue()->text;
-                                $tmp .= " = ";
-                                $tmp .= $node->getChildren()[2]->getValue()->text;
-                                $tmp .= $this->process($node->getChildren()[3]);
-                                $tmp .= $this->process($node->getChildren()[4]) . ";";
-                                return $tmp;
-                            } else {
-                                return $node->getChildren()[0]->getValue()->text . " = " . $this->process($node->getChildren()[2]) . ";";
-                            }
-                            // $matches = [
-                            //     'variavel' => $node->getChildren()[0]->getValue()->text,
-                            //     'valor' => $node->getChildren()[2]->getValue()->text
-                            // ];
-                            // return str_replace(array_keys($matches), array_values($matches), $this->variablesDeclaration[Types::NUMBER_TYPE]);
-                        }
+                    // var_dump(sizeof($node->getChildren()));
+                    if (sizeof($node->getChildren()) == 1) {
+                        return $this->process($node->getChildren()[0]);
                     } else {
-                        $temp = $this->functions[$node->getChildren()[0]->getValue()->text];
+                        // var_dump($this->functions[$node->getChildren()[0]->getValue()->text]);
+                        $function = $this->functions[$node->getChildren()[0]->getValue()->text];
                         for ($i = 2, $k = 1; $i < count($node->getChildren())-1; $i+=2, $k++) {
-                            $temp = preg_replace('/var'.($k).'\(([a-zA-Z]+)\)/', $node->getChildren()[$i]->getValue()->text, $temp);
+                            $function = preg_replace(
+                                '/var'.($k).'\(([a-zA-Z]+)\)/',
+                                $this->process($node->getChildren()[$i]),
+                                $function
+                            );
                         }
-                        return $temp;
+                        return $function;
                     }
                     break;
                 case 'repeatStatement':
@@ -214,6 +213,8 @@ class Translator
                 case ReducLexer::T_MINUS:
                 case ReducLexer::T_MULTIPLY:
                 case ReducLexer::T_DIVIDE:
+                case ReducLexer::T_EQUALS:
+                case ReducLexer::T_STRING:
                     return $node->getValue()->text;
                     break;
             }
@@ -233,7 +234,7 @@ class Translator
     {
         switch ($node->getValue()) {
             case Types::NUMBER_TYPE."TypeVariable":
-                var_dump($node->getChildren()[1]->getValue());
+                // var_dump($node->getChildren()[1]->getValue());
                 echo "esse";
                 break;
         }
