@@ -14,10 +14,10 @@ class Parser
     protected $input;
 
     /**
-     * Ddynamically-sized lookahead buffer
+     * Dynamically-sized lookahead buffer
      * @var array
      */
-    protected $lookahead = [];
+    protected $lookaheadBuffer;
 
     /**
      * Stack of index markers into lookahead buffer
@@ -35,16 +35,17 @@ class Parser
     public $parseTree;
 
     /**
-     * Creates a new Parser instanse and consumes the first token.
+     * Creates a new Parser instance and consumes the first token.
      *
      * @param Lexer $lexer
      */
     public function __construct(Lexer $lexer)
     {
+        $this->lookaheadBuffer = new LookaheadBuffer();
         $this->symbolTable = new SymbolTable();
         $this->parseTree = new ParseTree();
         $this->input = $lexer;
-        $this->sync(1);
+        $this->fillLookaheadBuffer(1);
     }
 
     /**
@@ -52,6 +53,7 @@ class Parser
      *
      * @param  int $type
      * @return void
+     * @throws Exception
      */
     public function match($type)
     {
@@ -64,14 +66,35 @@ class Parser
     }
 
     /**
+     * Match the token if it is of any specific types or throws exception.
+     *
+     * @param array $types
+     * @throws Exception
+     */
+    public function matchAny(array $types)
+    {
+        if (in_array($this->fetchLookaheadType(), $types, true)) {
+            $this->parseTree->leaf($this->fetchLookaheadToken());
+            $this->consume();
+        } else {
+            throw new Exception("Type mismatch ");
+        }
+    }
+
+    public function currentLookaheadToken()
+    {
+        return $this->fetchLookaheadToken(1);
+    }
+
+    /**
      * Fetch the token at a given index
      * @param  integer $i index of the token
      * @return Token
      */
     public function fetchLookaheadToken($i = 1)
     {
-        $this->sync($i);
-        return $this->lookahead[$this->position + $i - 1];
+        $this->fillLookaheadBuffer($i);
+        return $this->lookaheadBuffer->getTokenAt($this->position + $i - 1);
     }
 
     public function fetchLookaheadType($i = 1)
@@ -80,15 +103,15 @@ class Parser
     }
 
     /**
-     * Make sure there are i tokens from current position
-     * @param  integer $i index to sync
+     * Make sure there are a particular number of tokens from current position
+     * @param  integer $tokensNeeded index to fill lookahead buffer up to
      * @return void
      */
-    private function sync($i)
+    private function fillLookaheadBuffer($tokensNeeded)
     {
-        if ($this->position + $i - 1 > (count($this->lookahead) - 1)) { // in case out of tokens
-            $missingTokens = ($this->position + $i - 1) - (count($this->lookahead) - 1);
-            $this->fill($missingTokens);
+        if ($this->position + $tokensNeeded > $this->lookaheadBuffer->size()) { // in case out of tokens
+            $missingTokens = ($this->position + $tokensNeeded) - $this->lookaheadBuffer->size();
+            $this->fillMissingTokens($missingTokens);
         }
     }
 
@@ -97,10 +120,10 @@ class Parser
      * @param  integer $missingTokens number of tokens to fill
      * @return void
      */
-    private function fill($missingTokens)
+    private function fillMissingTokens($missingTokens)
     {
         for ($i = 1; $i <= $missingTokens; $i++) {
-            $this->lookahead[] = $this->input->nextToken();
+            $this->lookaheadBuffer->loadToken($this->input->nextToken());
         }
     }
 
@@ -112,11 +135,11 @@ class Parser
     public function consume()
     {
         $this->position++;
-        if ($this->position == count($this->lookahead) && !$this->isSpeculating()) {
+        if ($this->position == $this->lookaheadBuffer->size() && !$this->isSpeculating()) {
             $this->position = 0;
-            $this->lookahead = [];
+            $this->lookaheadBuffer->clear();
         }
-        $this->sync(1);
+        $this->fillLookaheadBuffer(1);
     }
 
     public function mark()
@@ -131,6 +154,19 @@ class Parser
         $this->seek($marker);
     }
 
+    public function speculate($callback)
+    {
+        $success = true;
+        $this->mark();
+        try {
+            $callback;
+        } catch (\Exception $e) {
+            $success = false;
+        }
+        $this->release();
+        return $success;
+    }
+
     public function seek($marker)
     {
         $this->position = $marker;
@@ -138,6 +174,6 @@ class Parser
 
     private function isSpeculating()
     {
-        return count($this->markers > 0);
+        return count($this->markers) > 0;
     }
 }

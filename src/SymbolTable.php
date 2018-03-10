@@ -7,7 +7,7 @@ namespace Natalnet\Relex;
 */
 class SymbolTable implements Scope
 {
-    protected $symbols;
+    protected $symbols = [];
 
     public function __construct()
     {

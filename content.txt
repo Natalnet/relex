@@ -3,7 +3,12 @@ texto vart = "ola mundo"
 booleano varb = verdadeiro
 
 inicio
-se (var + var > 3) entao {
+se (var / (1 * 3) == var + var ou (5 + 1 >= 3) ou falso == falso e "isso" == "isto") entao {
 
+} senao se (!falso) entao {
+    var = 1
+}
+
+repita var vezes {
 }
 fim
