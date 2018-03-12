@@ -281,7 +281,7 @@ class ReducLexer extends Lexer
 
     protected function isKeyword($name)
     {
-        if (defined($name) && constant($name) > 200) {
+        if (defined($name) && constant($name) >= 200) {
             return true;
         }
         return false;

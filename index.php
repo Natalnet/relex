@@ -9,18 +9,84 @@ use Natalnet\Relex\Translator\Translator;
 use Natalnet\Relex\Types;
 use Natalnet\Relex\Visitor\PreOrderVisitor;
 
-// $lexer = new ReducLexer("inicio se (a ! b) entao {} se (a == b) entao {} fim");
+//$lexer = new ReducLexer("
+//numero var = 8
+//texto vart = \"ola mundo\"
+//booleano varb = verdadeiro
+//inicio
+//se (ultra(5) == (5 + 1)) entao {
+//ultra(5)
+//}
+//fim");
 $lexer = new ReducLexer(file_get_contents("content.txt"));
 $parser = new ReducParser($lexer);
 
-$function = new FunctionSymbol('escrever', null, [Types::NUMBER_TYPE, Types::NUMBER_TYPE, Types::STRING_TYPE]);
+//$function = new FunctionSymbol('escrever', null, [Types::NUMBER_TYPE, Types::NUMBER_TYPE, Types::STRING_TYPE]);
 $function2 = new FunctionSymbol('ultra', Types::NUMBER_TYPE, [Types::NUMBER_TYPE]);
-$parser->symbolTable->define($function);
+//$parser->symbolTable->define($function);
 $parser->symbolTable->define($function2);
 
 try {
     $parser->program();
-    echo "Okay!\n";
+    echo "Parser Okay!\n";
+    $trans = new Translator($parser->parseTree);
+
+
+    $trans->setMainFunction("task main(){
+        comandos
+    }
+    ");
+
+    $trans->setIfStatement("if(condicao){
+ comandos 
+}");
+    $trans->setElseIfStatement("else if (condicao) {comandos}");
+    $trans->setElseStatement("else {comandos}");
+
+    $trans->setWhileStatement("while(condicao){
+ comandos 
+}
+");
+
+    $trans->setRepeatStatement("repeat(var){
+ comandos 
+}");
+
+    $trans->setSwitchStatement("switch (variavel) {
+//teste1
+case (valor1): comandos1
+break;
+//teste2
+default: comandos2
+break;
+//fim
+}
+");
+
+    $trans->setForStatement("for (int variavel = valor1; variavel < valor2; variavel+=passo) {
+ comandos 
+} 
+");
+
+    $trans->setOperators([
+        ReducLexer::T_E => '&&',
+        ReducLexer::T_OU => '||',
+        ReducLexer::T_NEGATE => '!',
+        ReducLexer::T_EQUALS_EQUALS => '==',
+        ReducLexer::T_NOT_EQUAL => '!=',
+        ReducLexer::T_GREATER_THAN => '>',
+        ReducLexer::T_GREATER_THAN_EQUAL => '>=',
+        ReducLexer::T_LESS_THAN => '<',
+        ReducLexer::T_LESS_THAN_EQUAL => '<=',
+    ]);
+
+ $trans->setFunctions([
+     'ultra' => 'SensorUS(IN_var1(int))'
+ ]);
+
+    $trans->translate();
+    echo $trans->getTranslation();
+
     // $token = $lexer->nextToken();
 
     // while ($token->type != 1) {
@@ -30,12 +96,6 @@ try {
 } catch (Exception $e) {
     echo $e->getMessage() . "\n";
 }
-
-// $trans = new Translator($parser->parseTree);
-// $trans->setMainFunction("task main(){
-//  comandos
-// }
-// ");
 // $controlFlow = [
 //     'ifStatement' => "if(condicao){
 //  comandos1
@@ -67,8 +127,8 @@ try {
 //   } while( u8g.nextPage() );",
 //     'ultra' => 'SensorUS(IN_var1(int))'
 // ]);
-// $trans->translate();
-// echo $trans->getTranslation();
+
+
 // $visitor = new PreOrderVisitor;
 // $yield = $parser->parseTree->getNode()->accept($visitor);
 // print_r($parser->parseTree);

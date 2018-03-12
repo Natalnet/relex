@@ -58,7 +58,8 @@ class Parser
     public function match($type)
     {
         if ($this->fetchLookaheadType() == $type) {
-            $this->parseTree->leaf($this->fetchLookaheadToken());
+            $this->getParseTree()->leaf($this->fetchLookaheadToken());
+            echo "\n\n".$this->fetchLookaheadToken()."\n";
             $this->consume();
         } else {
             throw new Exception("Expecting ".$this->input->getTokenName($type).", found ".$this->fetchLookaheadToken()->text);
@@ -74,7 +75,8 @@ class Parser
     public function matchAny(array $types)
     {
         if (in_array($this->fetchLookaheadType(), $types, true)) {
-            $this->parseTree->leaf($this->fetchLookaheadToken());
+            $this->getParseTree()->leaf($this->fetchLookaheadToken());
+            echo "\n\n".$this->fetchLookaheadToken()."\n";
             $this->consume();
         } else {
             throw new Exception("Type mismatch ");
@@ -175,5 +177,17 @@ class Parser
     private function isSpeculating()
     {
         return count($this->markers) > 0;
+    }
+
+    /**
+     * @return ParseTree
+     */
+    protected function getParseTree()
+    {
+        if ($this->isSpeculating()) {
+            return new ParseTree();
+        }
+
+        return $this->parseTree;
     }
 }
