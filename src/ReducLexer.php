@@ -35,6 +35,7 @@ class ReducLexer extends Lexer
     // Keyword tokens
     const T_ATE                  = 200;
     const T_BOOLEANO             = 201;
+    const T_CASO                 = 224;
     const T_DE                   = 202;
     const T_E                    = 203;
     const T_ENQUANTO             = 204;
@@ -45,17 +46,18 @@ class ReducLexer extends Lexer
     const T_INICIO               = 209;
     const T_NUMERO               = 210;
     const T_OU                   = 211;
-    const T_PARA                 = 212;
-    const T_PASSO                = 213;
-    const T_REPITA               = 214;
-    const T_SAIR                 = 215;
-    const T_SE                   = 216;
-    const T_SENAO                = 217;
-    const T_TAREFA               = 218;
-    const T_TESTE                = 219;
-    const T_TEXTO                = 220;
-    const T_VERDADEIRO           = 221;
-    const T_VEZES                = 222;
+    const T_OUTROS               = 212;
+    const T_PARA                 = 213;
+    const T_PASSO                = 214;
+    const T_REPITA               = 215;
+    const T_SAIR                 = 216;
+    const T_SE                   = 217;
+    const T_SENAO                = 218;
+    const T_TAREFA               = 219;
+    const T_TESTE                = 220;
+    const T_TEXTO                = 221;
+    const T_VERDADEIRO           = 222;
+    const T_VEZES                = 223;
 
     public static $tokenNames = [
         self::EOF_TYPE               => '<eof>',

@@ -32,39 +32,53 @@ try {
     $trans = new Translator($parser->parseTree);
 
 
-    $trans->setMainFunction("task main(){
-        comandos
-    }
-    ");
+    $trans->setMainFunction("task main() {
+    comandos
+}
+");
 
-    $trans->setIfStatement("if(condicao){
- comandos 
-}");
-    $trans->setElseIfStatement("else if (condicao) {comandos}");
-    $trans->setElseStatement("else {comandos}");
-
-    $trans->setWhileStatement("while(condicao){
+    $trans->setTaskDeclaration("task funcao(){
  comandos 
 }
 ");
 
-    $trans->setRepeatStatement("repeat(var){
- comandos 
-}");
+    $trans->setIfStatement("if (condicao) {
+    comandos
+}
+");
+    $trans->setElseIfStatement("else if (condicao) {
+    comandos
+}
+");
+    $trans->setElseStatement("else { 
+    comandos
+}
+");
+
+    $trans->setWhileStatement("while (condicao) {
+    comandos 
+}
+");
+
+    $trans->setRepeatStatement("repeat (var) {
+    comandos 
+}
+");
 
     $trans->setSwitchStatement("switch (variavel) {
-//teste1
-case (valor1): comandos1
-break;
-//teste2
-default: comandos2
-break;
-//fim
+    casos
+    default: comandos
+    break;
 }
+");
+
+    $trans->setSwitchCaseStatement("
+    case (valor): comandos
+    break;
 ");
 
     $trans->setForStatement("for (int variavel = valor1; variavel < valor2; variavel+=passo) {
- comandos 
+    comandos 
 } 
 ");
 
@@ -80,8 +94,22 @@ break;
         ReducLexer::T_LESS_THAN_EQUAL => '<=',
     ]);
 
+    $trans->setVariableDeclarations([
+        Types::NUMBER_TYPE => '
+float variavel = valor;
+',
+        Types::STRING_TYPE => '
+char variavel[] = valor;
+',
+        Types::BOOLEAN_TYPE => '
+bool variavel = valor; 
+',
+    ]);
+
  $trans->setFunctions([
-     'ultra' => 'SensorUS(IN_var1(int))'
+     'ultra' => '
+    SensorUS(IN_var1(int))
+'
  ]);
 
     $trans->translate();

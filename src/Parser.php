@@ -59,7 +59,8 @@ class Parser
     {
         if ($this->fetchLookaheadType() == $type) {
             $this->getParseTree()->leaf($this->fetchLookaheadToken());
-            echo "\n\n".$this->fetchLookaheadToken()."\n";
+//            if (!$this->isSpeculating())
+//               echo "\n\n".$this->fetchLookaheadToken()."\n";
             $this->consume();
         } else {
             throw new Exception("Expecting ".$this->input->getTokenName($type).", found ".$this->fetchLookaheadToken()->text);
@@ -76,7 +77,7 @@ class Parser
     {
         if (in_array($this->fetchLookaheadType(), $types, true)) {
             $this->getParseTree()->leaf($this->fetchLookaheadToken());
-            echo "\n\n".$this->fetchLookaheadToken()."\n";
+//            echo "\n\n".$this->fetchLookaheadToken()."\n";
             $this->consume();
         } else {
             throw new Exception("Type mismatch ");

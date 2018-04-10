@@ -76,13 +76,16 @@ class ReducParser extends Parser
 
     private function taskDeclaration()
     {
+        $this->getParseTree()->tree('declareTask');
+        $this->match(ReducLexer::T_TAREFA);
+
         $name = $this->currentLookaheadToken()->text;
-        $this->getParseTree()->tree('task');
+
         $this->match(ReducLexer::T_IDENTIFIER);
         $this->match(ReducLexer::T_OPEN_CURLY_BRACE);
         $this->commands();
         $this->match(ReducLexer::T_CLOSE_CURLY_BRACE);
-        $task = new Symbol($name, null);
+        $task = new FunctionSymbol($name, null, []);
         $this->symbolTable->define($task);
         $this->getParseTree()->end();
     }
@@ -400,21 +403,27 @@ class ReducParser extends Parser
         $variable = $this->matchVariable();
         $this->match(ReducLexer::T_CLOSE_PARENTHESIS);
         $this->match(ReducLexer::T_OPEN_CURLY_BRACE);
-        $this->match(ReducLexer::T_SE);
-        switch ($variable->getType()) {
-            case Types::NUMBER_TYPE:
-                $this->matchNumeric();
-                break;
-            case Types::BOOLEAN_TYPE:
-                $this->matchBoolean();
-                break;
-            case Types::STRING_TYPE:
-                $this->matchString();
-                break;
+        $this->getParseTree()->tree('switchCases');
+        while ($this->fetchLookaheadType() === ReducLexer::T_CASO) {
+            $this->getParseTree()->tree('switchCaseStatement');
+            $this->match(ReducLexer::T_CASO);
+            switch ($variable->getType()) {
+                case Types::NUMBER_TYPE:
+                    $this->matchNumeric();
+                    break;
+                case Types::BOOLEAN_TYPE:
+                    $this->matchBoolean();
+                    break;
+                case Types::STRING_TYPE:
+                    $this->matchString();
+                    break;
+            }
+            $this->match(ReducLexer::T_SEMICOLON);
+            $this->commands();
+            $this->getParseTree()->end();
         }
-        $this->match(ReducLexer::T_SEMICOLON);
-        $this->commands();
-        $this->match(ReducLexer::T_SENAO);
+        $this->getParseTree()->end();
+        $this->match(ReducLexer::T_OUTROS);
         $this->match(ReducLexer::T_SEMICOLON);
         $this->commands();
         $this->match(ReducLexer::T_CLOSE_CURLY_BRACE);
@@ -428,7 +437,6 @@ class ReducParser extends Parser
         $this->matchVariable(Types::NUMBER_TYPE);
         $this->match(ReducLexer::T_DE);
         $this->matchNumeric();
-        var_dump($this->currentLookaheadToken());
         $this->match(ReducLexer::T_ATE);
         $this->matchNumeric();
         $this->match(ReducLexer::T_PASSO);
@@ -516,19 +524,52 @@ class ReducParser extends Parser
 
     public function matchLogicalExpression()
     {
-        if ($this->speculateEqualityExpression()) {
-            $this->matchEqualityExpression();
+        if ($this->fetchLookaheadType() === ReducLexer::T_OPEN_PARENTHESIS) {
+            $this->match(ReducLexer::T_OPEN_PARENTHESIS);
+            $this->matchLogicalExpression();
+            $this->match(ReducLexer::T_CLOSE_PARENTHESIS);
         } else {
-            $this->matchBoolean();
-        }
-        while (in_array($this->currentLookaheadToken()->type, [ReducLexer::T_E, ReducLexer::T_OU])) {
-            $this->matchAny([ReducLexer::T_E, ReducLexer::T_OU]);
             if ($this->speculateEqualityExpression()) {
                 $this->matchEqualityExpression();
             } else {
                 $this->matchBoolean();
             }
         }
+        while (in_array($this->currentLookaheadToken()->type, [ReducLexer::T_E, ReducLexer::T_OU])) {
+            $this->matchAny([ReducLexer::T_E, ReducLexer::T_OU]);
+            if ($this->speculateEqualityExpression()) {
+                $this->matchEqualityExpression();
+            } else if ($this->fetchLookaheadType() === ReducLexer::T_OPEN_PARENTHESIS) {
+                $this->matchLogicalExpression();
+            } else {
+                $this->matchBoolean();
+            }
+        }
+
+
+
+
+//        $parenthesis = false;
+//        $innerParenthesis = false;
+//        if ($this->currentLookaheadToken() === ReducLexer::T_OPEN_PARENTHESIS){
+//            $this->match(ReducLexer::T_OPEN_PARENTHESIS);
+//        }
+//        if ($this->speculateEqualityExpression()) {
+//            $this->matchEqualityExpression();
+//        } else {
+//            $this->matchBoolean();
+//        }
+//        while (in_array($this->currentLookaheadToken()->type, [ReducLexer::T_E, ReducLexer::T_OU])) {
+//            $this->matchAny([ReducLexer::T_E, ReducLexer::T_OU]);
+//            if ($this->speculateEqualityExpression()) {
+//                $this->matchEqualityExpression();
+//            } else {
+//                $this->matchBoolean();
+//            }
+//        }
+//        if ($parenthesis) {
+//            $this->match(ReducLexer::T_CLOSE_PARENTHESIS);
+//        }
     }
 
     public function matchRelationalExpression()
