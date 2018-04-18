@@ -3,25 +3,24 @@
 namespace Natalnet\Relex;
 
 /**
-* a
-*/
+ * a.
+ */
 class SymbolTable implements Scope
 {
     protected $symbols = [];
 
     public function __construct()
     {
-        # code...
+        // code...
     }
 
     public function getScopeName()
     {
-        return "global";
+        return 'global';
     }
 
     public function getEnclosingScope()
     {
-        return null;
     }
 
     public function define(Symbol $symbol)

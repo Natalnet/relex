@@ -5,7 +5,7 @@ namespace Natalnet\Relex\Node;
 use Natalnet\Relex\Visitor\VisitorInterface;
 
 /**
- * Class Node
+ * Class Node.
  */
 class Node implements NodeInterface
 {
@@ -15,10 +15,9 @@ class Node implements NodeInterface
     private $value;
 
     /**
-     * parent
+     * parent.
      *
      * @var NodeInterface
-     * @access private
      */
     private $parent;
 
@@ -34,7 +33,7 @@ class Node implements NodeInterface
     public function __construct($value = null, array $children = [])
     {
         $this->setValue($value);
-        if (!empty($children)) {
+        if (! empty($children)) {
             $this->setChildren($children);
         }
     }
@@ -151,7 +150,7 @@ class Node implements NodeInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getAncestorsAndSelf()
     {
@@ -178,7 +177,7 @@ class Node implements NodeInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getNeighborsAndSelf()
     {
@@ -186,7 +185,7 @@ class Node implements NodeInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function isLeaf()
     {
@@ -202,7 +201,7 @@ class Node implements NodeInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function isChild()
     {
@@ -210,7 +209,7 @@ class Node implements NodeInterface
     }
 
     /**
-     * Find the root of the node
+     * Find the root of the node.
      *
      * @return NodeInterface
      */
@@ -242,7 +241,7 @@ class Node implements NodeInterface
     }
 
     /**
-     * Return the height of the tree whose root is this node
+     * Return the height of the tree whose root is this node.
      *
      * @return int
      */
@@ -262,7 +261,7 @@ class Node implements NodeInterface
     }
 
     /**
-     * Return the number of nodes in a tree
+     * Return the number of nodes in a tree.
      * @return int
      */
     public function getSize()

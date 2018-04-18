@@ -2,32 +2,32 @@
 
 namespace Natalnet\Relex;
 
+use Exception;
 use Natalnet\Relex\ParseTree\ParseTree;
-use \Exception;
 
 class Parser
 {
     /**
-     * The input lexer to be received
+     * The input lexer to be received.
      * @var Lexer
      */
     protected $input;
 
     /**
-     * Dynamically-sized lookahead buffer
+     * Dynamically-sized lookahead buffer.
      * @var array
      */
     protected $lookaheadBuffer;
 
     /**
-     * Stack of index markers into lookahead buffer
+     * Stack of index markers into lookahead buffer.
      * @var array
      */
     protected $markers = [];
 
     /**
-     * Index of current lookahead token
-     * @var integer
+     * Index of current lookahead token.
+     * @var int
      */
     protected $position = 0;
 
@@ -63,7 +63,7 @@ class Parser
 //               echo "\n\n".$this->fetchLookaheadToken()."\n";
             $this->consume();
         } else {
-            throw new Exception("Expecting ".$this->input->getTokenName($type).", found ".$this->fetchLookaheadToken()->text);
+            throw new Exception('Expecting '.$this->input->getTokenName($type).', found '.$this->fetchLookaheadToken()->text);
         }
     }
 
@@ -80,7 +80,7 @@ class Parser
 //            echo "\n\n".$this->fetchLookaheadToken()."\n";
             $this->consume();
         } else {
-            throw new Exception("Type mismatch ");
+            throw new Exception('Type mismatch ');
         }
     }
 
@@ -90,13 +90,14 @@ class Parser
     }
 
     /**
-     * Fetch the token at a given index
-     * @param  integer $i index of the token
+     * Fetch the token at a given index.
+     * @param  int $i index of the token
      * @return Token
      */
     public function fetchLookaheadToken($i = 1)
     {
         $this->fillLookaheadBuffer($i);
+
         return $this->lookaheadBuffer->getTokenAt($this->position + $i - 1);
     }
 
@@ -106,8 +107,8 @@ class Parser
     }
 
     /**
-     * Make sure there are a particular number of tokens from current position
-     * @param  integer $tokensNeeded index to fill lookahead buffer up to
+     * Make sure there are a particular number of tokens from current position.
+     * @param  int $tokensNeeded index to fill lookahead buffer up to
      * @return void
      */
     private function fillLookaheadBuffer($tokensNeeded)
@@ -119,8 +120,8 @@ class Parser
     }
 
     /**
-     * Fill any missing tokens in lookahead buffer
-     * @param  integer $missingTokens number of tokens to fill
+     * Fill any missing tokens in lookahead buffer.
+     * @param  int $missingTokens number of tokens to fill
      * @return void
      */
     private function fillMissingTokens($missingTokens)
@@ -138,7 +139,7 @@ class Parser
     public function consume()
     {
         $this->position++;
-        if ($this->position == $this->lookaheadBuffer->size() && !$this->isSpeculating()) {
+        if ($this->position == $this->lookaheadBuffer->size() && ! $this->isSpeculating()) {
             $this->position = 0;
             $this->lookaheadBuffer->clear();
         }
@@ -148,6 +149,7 @@ class Parser
     public function mark()
     {
         $this->markers[] = $this->position;
+
         return $this->position;
     }
 
@@ -167,6 +169,7 @@ class Parser
             $success = false;
         }
         $this->release();
+
         return $success;
     }
 

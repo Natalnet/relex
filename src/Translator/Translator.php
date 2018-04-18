@@ -2,14 +2,14 @@
 
 namespace Natalnet\Relex\Translator;
 
-use Natalnet\Relex\Node\NodeInterface;
-use Natalnet\Relex\ParseTree\ParseTreeInterface;
-use Natalnet\Relex\ReducLexer;
 use Natalnet\Relex\Token;
 use Natalnet\Relex\Types;
+use Natalnet\Relex\ReducLexer;
+use Natalnet\Relex\Node\NodeInterface;
+use Natalnet\Relex\ParseTree\ParseTreeInterface;
 
 /**
- * summary
+ * summary.
  */
 class Translator
 {
@@ -23,11 +23,10 @@ class Translator
     protected $taskDeclaration = '';
     protected $callFunction = '';
 
-
     protected $variableDeclarations = [
         Types::NUMBER_TYPE => '',
         Types::STRING_TYPE => '',
-        Types::BOOLEAN_TYPE => ''
+        Types::BOOLEAN_TYPE => '',
     ];
 
     protected $constTrue = '';
@@ -167,14 +166,15 @@ class Translator
 
     public function process(NodeInterface $node)
     {
-        if (!($node->getValue() instanceof Token)) {
+        if (! ($node->getValue() instanceof Token)) {
 //            echo "\n\n".$node->getValue()."\n\n";
             switch ($node->getValue()) {
                 case 'symbols':
-                    $temp = "";
+                    $temp = '';
                     foreach ($node->getChildren() as $child) {
                         $temp .= $this->process($child);
                     }
+
                     return $temp;
                     break;
                 case 'defineNumber':
@@ -186,25 +186,28 @@ class Translator
                 case 'declareTask':
                     $matches = [
                         'funcao' => $this->process($node->getChildren()[1]),
-                        'comandos' => $this->process($node->getChildren()[3])
+                        'comandos' => $this->process($node->getChildren()[3]),
                     ];
+
                     return str_replace(array_keys($matches), array_values($matches), $this->taskDeclaration);
                     break;
                 case 'program':
                     return str_replace('comandos', $this->process($node->getChildren()[1]), $this->mainFunction);
                     break;
                 case 'commands':
-                    $temp = "";
+                    $temp = '';
                     foreach ($node->getChildren() as $child) {
                         $temp .= $this->process($child);
                     }
+
                     return $temp;
                     break;
                 case 'command':
-                    $temp = "";
+                    $temp = '';
                     foreach ($node->getChildren() as $child) {
                         $temp .= $this->process($child);
                     }
+
                     return $temp;
                     break;
                 case 'useFunction':
@@ -213,17 +216,18 @@ class Translator
                 case 'useVariable':
                     $matches = [
                         'variavel' => $this->process($node->getChildren()[0]),
-                        'valor' => ""
+                        'valor' => '',
                     ];
-                    for ($i = 2; $i < sizeof($node->getChildren()); $i++) {
+                    for ($i = 2; $i < count($node->getChildren()); $i++) {
                         $matches['valor'] .= $this->process($node->getChildren()[$i]);
                     }
-                    return str_replace(array_keys($matches), array_values($matches), "variavel = valor;");
+
+                    return str_replace(array_keys($matches), array_values($matches), 'variavel = valor;');
                     break;
                 case 'ifStatement':
                     $matches = [
                         'condicao' => $this->process($node->getChildren()[2]),
-                        'comandos' => $this->process($node->getChildren()[6])
+                        'comandos' => $this->process($node->getChildren()[6]),
                     ];
                     $aditional = '';
                     if (isset($node->getChildren()[8])) {
@@ -231,37 +235,42 @@ class Translator
                             $aditional .= $this->process($node->getChildren()[$i]);
                         }
                     }
-                    return str_replace(array_keys($matches), array_values($matches), $this->ifStatement) . $aditional;
+
+                    return str_replace(array_keys($matches), array_values($matches), $this->ifStatement).$aditional;
                     break;
 
                 case 'elseIfStatement':
                     $matches = [
                         'condicao' => $this->process($node->getChildren()[3]),
-                        'comandos' => $this->process($node->getChildren()[7])
+                        'comandos' => $this->process($node->getChildren()[7]),
                     ];
+
                     return str_replace(array_keys($matches), array_values($matches), $this->elseIfStatement);
                     break;
 
                 case 'elseStatement':
                     $matches = [
-                        'comandos' => $this->process($node->getChildren()[2])
+                        'comandos' => $this->process($node->getChildren()[2]),
                     ];
+
                     return str_replace(array_keys($matches), array_values($matches), $this->elseStatement);
                     break;
 
                 case 'whileStatement':
                     $matches = [
                         'condicao' => $this->process($node->getChildren()[2]),
-                        'comandos' => $this->process($node->getChildren()[6])
+                        'comandos' => $this->process($node->getChildren()[6]),
                     ];
+
                     return str_replace(array_keys($matches), array_values($matches), $this->whileStatement);
                     break;
 
                 case 'repeatStatement':
                     $matches = [
                         'var' => $this->process($node->getChildren()[1]),
-                        'comandos' => $this->process($node->getChildren()[4])
+                        'comandos' => $this->process($node->getChildren()[4]),
                     ];
+
                     return str_replace(array_keys($matches), array_values($matches), $this->repeatStatement);
                     break;
 
@@ -271,14 +280,16 @@ class Translator
                         'casos' => $this->process($node->getChildren()[5]),
                         'comandos' => $this->process($node->getChildren()[8]),
                     ];
+
                     return str_replace(array_keys($matches), array_values($matches), $this->switchStatement);
                     break;
 
                 case 'switchCases':
-                    $temp = "";
+                    $temp = '';
                     foreach ($node->getChildren() as $child) {
                         $temp .= $this->process($child);
                     }
+
                     return $temp;
                     break;
 
@@ -287,6 +298,7 @@ class Translator
                         'valor' => $this->process($node->getChildren()[1]),
                         'comandos' => $this->process($node->getChildren()[3]),
                     ];
+
                     return str_replace(array_keys($matches), array_values($matches), $this->switchCaseStatement);
                     break;
 
@@ -298,18 +310,20 @@ class Translator
                         'passo' => $this->process($node->getChildren()[7]),
                         'comandos' => $this->process($node->getChildren()[10]),
                     ];
+
                     return str_replace(array_keys($matches), array_values($matches), $this->forStatement);
                     break;
 
                 case 'condition':
-                    $temp = "";
+                    $temp = '';
                     foreach ($node->getChildren() as $child) {
                         $temp .= $this->process($child);
                     }
+
                     return $temp;
                     break;
                 case 'symbolUse':
-                    if (sizeof($node->getChildren()) == 1) {
+                    if (count($node->getChildren()) == 1) {
                         return $this->process($node->getChildren()[0]);
                     } else {
                         $value = $this->process($node->getChildren()[0]);
@@ -321,12 +335,12 @@ class Translator
                     }
                     break;
                 case 'identifier':
-                    if (sizeof($node->getChildren()) == 1) {
+                    if (count($node->getChildren()) == 1) {
                         return $this->process($node->getChildren()[0]);
                     } else {
-                        if (isset($this->functions[$node->getChildren()[0]->getValue()->text])){
+                        if (isset($this->functions[$node->getChildren()[0]->getValue()->text])) {
                             $function = $this->functions[$node->getChildren()[0]->getValue()->text];
-                            for ($i = 2, $k = 1; $i < count($node->getChildren())-1; $i+=2, $k++) {
+                            for ($i = 2, $k = 1; $i < count($node->getChildren()) - 1; $i += 2, $k++) {
                                 $function = preg_replace(
                                     '/var'.($k).'\(([a-zA-Z]+)\)/',
                                     $this->process($node->getChildren()[$i]),
@@ -336,6 +350,7 @@ class Translator
                         } else {
                             $function = str_replace('funcao', $node->getChildren()[0]->getValue()->text, $this->callFunction);
                         }
+
                         return $function;
                     }
                     break;
@@ -394,8 +409,9 @@ class Translator
     {
         $matches = [
             'variavel' => $node->getChildren()[1]->getValue()->text,
-            'valor' => $this->process($node->getChildren()[3])
+            'valor' => $this->process($node->getChildren()[3]),
         ];
+
         return str_replace(array_keys($matches), array_values($matches), $this->variableDeclarations[$type]);
     }
 

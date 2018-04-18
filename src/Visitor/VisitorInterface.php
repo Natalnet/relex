@@ -7,14 +7,14 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Natalnet\Relex\Visitor;
 
 use Natalnet\Relex\Node\NodeInterface;
 
 /**
- * Visitor interface for Nodes
+ * Visitor interface for Nodes.
  *
- * @package    Tree
  * @author     Nicolò Martini <nicmartnic@gmail.com>
  */
 interface VisitorInterface

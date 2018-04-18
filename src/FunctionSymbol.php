@@ -3,7 +3,7 @@
 namespace Natalnet\Relex;
 
 /**
- * summary
+ * summary.
  */
 class FunctionSymbol extends Symbol
 {

@@ -22,7 +22,7 @@ abstract class Lexer
 
     /**
      * Index into input of current character.
-     * @var integer
+     * @var int
      */
     protected $position = 0;
 
@@ -43,7 +43,7 @@ abstract class Lexer
         $this->position++;
 
         if ($this->position >= strlen($this->input)) {
-            $this->char = Lexer::EOF;
+            $this->char = self::EOF;
         } else {
             $this->char = substr($this->input, $this->position, 1);
         }
