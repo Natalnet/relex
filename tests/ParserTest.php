@@ -41,21 +41,4 @@ class ParserTest extends TestCase
         $parser->program();
     }
 
-    /** @test */
-    function it_fails_on_se()
-    {
-//        $this->expectExceptionMessage('Expecting fim, found <EOF>');
-
-        $code = "
-inicio
-    se (1 == a) entao {}
-fim
-        ";
-        $lexer = new ReducLexer($code);
-        $parser = new ReducParser($lexer);
-        $parser->program();
-
-        $this->assertTrue(true);
-    }
-
 }
