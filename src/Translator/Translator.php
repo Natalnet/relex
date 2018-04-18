@@ -21,7 +21,7 @@ class Translator
 
     protected $mainFunction = '';
     protected $taskDeclaration = '';
-    protected $callFunction = "funcao(); ";
+    protected $callFunction = '';
 
 
     protected $variableDeclarations = [
@@ -30,10 +30,11 @@ class Translator
         Types::BOOLEAN_TYPE => ''
     ];
 
+    protected $constTrue = '';
+    protected $constFalse = '';
+    protected $constBreak = '';
 
-    protected $constTrue;
-    protected $constFalse;
-
+    protected $instructionSeparator = '';
 
     protected $operators = [
         ReducLexer::T_E => '',
@@ -46,8 +47,6 @@ class Translator
         ReducLexer::T_LESS_THAN => '',
         ReducLexer::T_LESS_THAN_EQUAL => '',
     ];
-
-
     protected $ifStatement = '';
     protected $elseIfStatement = '';
     protected $elseStatement = '';
@@ -56,15 +55,11 @@ class Translator
     protected $switchStatement = '';
     protected $switchCaseStatement = '';
     protected $forStatement = '';
-    protected $doStatement = '';
 
-    protected $constBreak = '';
+    protected $doStatement = '';
 
     protected $functions = [];
 
-    /**
-     * summary
-     */
     public function __construct(ParseTreeInterface $parseTree)
     {
         $this->parseTree = $parseTree;
@@ -80,6 +75,16 @@ class Translator
     public function setTaskDeclaration($taskDeclaration)
     {
         $this->taskDeclaration = $taskDeclaration;
+    }
+
+    public function setCallFunction($callFunction)
+    {
+        $this->callFunction = $callFunction;
+    }
+
+    public function setInstructionSeparator($instructionSeparator)
+    {
+        $this->instructionSeparator = $instructionSeparator;
     }
 
     public function setIfStatement($ifStatement)
@@ -230,7 +235,6 @@ class Translator
                     break;
 
                 case 'elseIfStatement':
-//                    echo ">>>>>>>". $node->getChildren()[3]->getValue();
                     $matches = [
                         'condicao' => $this->process($node->getChildren()[3]),
                         'comandos' => $this->process($node->getChildren()[7])
@@ -311,7 +315,7 @@ class Translator
                         $value = $this->process($node->getChildren()[0]);
                         $value .= $this->process($node->getChildren()[1]);
                         $value .= $this->process($node->getChildren()[2]);
-                        $value .= ';';
+                        $value .= $this->instructionSeparator;
 
                         return $value;
                     }
