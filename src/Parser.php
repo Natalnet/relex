@@ -7,22 +7,45 @@ use \Exception;
 
 class Parser
 {
+    /**
+     * The input lexer to be received
+     * @var Lexer
+     */
     protected $input;
-    protected $lookahead;
+
+    /**
+     * Dynamically-sized lookahead buffer
+     * @var array
+     */
+    protected $lookaheadBuffer;
+
+    /**
+     * Stack of index markers into lookahead buffer
+     * @var array
+     */
+    protected $markers = [];
+
+    /**
+     * Index of current lookahead token
+     * @var integer
+     */
+    protected $position = 0;
+
     public $symbolTable;
     public $parseTree;
 
     /**
-     * Creates a new Parser instanse and consumes the first token.
+     * Creates a new Parser instance and consumes the first token.
      *
      * @param Lexer $lexer
      */
     public function __construct(Lexer $lexer)
     {
+        $this->lookaheadBuffer = new LookaheadBuffer();
         $this->symbolTable = new SymbolTable();
         $this->parseTree = new ParseTree();
         $this->input = $lexer;
-        $this->consume();
+        $this->fillLookaheadBuffer(1);
     }
 
     /**
@@ -30,14 +53,80 @@ class Parser
      *
      * @param  int $type
      * @return void
+     * @throws Exception
      */
     public function match($type)
     {
-        if ($this->lookahead->type == $type) {
-            $this->parseTree->leaf($this->lookahead);
+        if ($this->fetchLookaheadType() == $type) {
+            $this->getParseTree()->leaf($this->fetchLookaheadToken());
+//            if (!$this->isSpeculating())
+//               echo "\n\n".$this->fetchLookaheadToken()."\n";
             $this->consume();
         } else {
-            throw new Exception("Expecting ".$this->input->getTokenName($type).", found ".$this->lookahead->text);
+            throw new Exception("Expecting ".$this->input->getTokenName($type).", found ".$this->fetchLookaheadToken()->text);
+        }
+    }
+
+    /**
+     * Match the token if it is of any specific types or throws exception.
+     *
+     * @param array $types
+     * @throws Exception
+     */
+    public function matchAny(array $types)
+    {
+        if (in_array($this->fetchLookaheadType(), $types, true)) {
+            $this->getParseTree()->leaf($this->fetchLookaheadToken());
+//            echo "\n\n".$this->fetchLookaheadToken()."\n";
+            $this->consume();
+        } else {
+            throw new Exception("Type mismatch ");
+        }
+    }
+
+    public function currentLookaheadToken()
+    {
+        return $this->fetchLookaheadToken(1);
+    }
+
+    /**
+     * Fetch the token at a given index
+     * @param  integer $i index of the token
+     * @return Token
+     */
+    public function fetchLookaheadToken($i = 1)
+    {
+        $this->fillLookaheadBuffer($i);
+        return $this->lookaheadBuffer->getTokenAt($this->position + $i - 1);
+    }
+
+    public function fetchLookaheadType($i = 1)
+    {
+        return $this->fetchLookaheadToken($i)->type;
+    }
+
+    /**
+     * Make sure there are a particular number of tokens from current position
+     * @param  integer $tokensNeeded index to fill lookahead buffer up to
+     * @return void
+     */
+    private function fillLookaheadBuffer($tokensNeeded)
+    {
+        if ($this->position + $tokensNeeded > $this->lookaheadBuffer->size()) { // in case out of tokens
+            $missingTokens = ($this->position + $tokensNeeded) - $this->lookaheadBuffer->size();
+            $this->fillMissingTokens($missingTokens);
+        }
+    }
+
+    /**
+     * Fill any missing tokens in lookahead buffer
+     * @param  integer $missingTokens number of tokens to fill
+     * @return void
+     */
+    private function fillMissingTokens($missingTokens)
+    {
+        for ($i = 1; $i <= $missingTokens; $i++) {
+            $this->lookaheadBuffer->loadToken($this->input->nextToken());
         }
     }
 
@@ -48,6 +137,58 @@ class Parser
      */
     public function consume()
     {
-        $this->lookahead = $this->input->nextToken();
+        $this->position++;
+        if ($this->position == $this->lookaheadBuffer->size() && !$this->isSpeculating()) {
+            $this->position = 0;
+            $this->lookaheadBuffer->clear();
+        }
+        $this->fillLookaheadBuffer(1);
+    }
+
+    public function mark()
+    {
+        $this->markers[] = $this->position;
+        return $this->position;
+    }
+
+    public function release()
+    {
+        $marker = array_pop($this->markers);
+        $this->seek($marker);
+    }
+
+    public function speculate($callback)
+    {
+        $success = true;
+        $this->mark();
+        try {
+            $callback;
+        } catch (\Exception $e) {
+            $success = false;
+        }
+        $this->release();
+        return $success;
+    }
+
+    public function seek($marker)
+    {
+        $this->position = $marker;
+    }
+
+    private function isSpeculating()
+    {
+        return count($this->markers) > 0;
+    }
+
+    /**
+     * @return ParseTree
+     */
+    protected function getParseTree()
+    {
+        if ($this->isSpeculating()) {
+            return new ParseTree();
+        }
+
+        return $this->parseTree;
     }
 }
