@@ -304,6 +304,18 @@ class Translator
                     }
                     return $temp;
                     break;
+                case 'symbolUse':
+                    if (sizeof($node->getChildren()) == 1) {
+                        return $this->process($node->getChildren()[0]);
+                    } else {
+                        $value = $this->process($node->getChildren()[0]);
+                        $value .= $this->process($node->getChildren()[1]);
+                        $value .= $this->process($node->getChildren()[2]);
+                        $value .= ';\n';
+
+                        return $value;
+                    }
+                    break;
                 case 'identifier':
                     if (sizeof($node->getChildren()) == 1) {
                         return $this->process($node->getChildren()[0]);
