@@ -7,38 +7,36 @@ use PHPUnit\Framework\TestCase;
 
 class ParserTest extends TestCase
 {
-
     /** @test */
-    function it_fails_on_empty_program()
+    public function it_fails_on_empty_program()
     {
         $this->expectExceptionMessage('Invalid character: ');
 
-        $code = "";
+        $code = '';
         $lexer = new ReducLexer($code);
         $parser = new ReducParser($lexer);
         $parser->program();
     }
 
     /** @test */
-    function it_fails_on_missing_inicio()
+    public function it_fails_on_missing_inicio()
     {
         $this->expectExceptionMessage('Expecting inicio, found');
 
-        $code = "fim";
+        $code = 'fim';
         $lexer = new ReducLexer($code);
         $parser = new ReducParser($lexer);
         $parser->program();
     }
 
     /** @test */
-    function it_fails_on_missing_fim()
+    public function it_fails_on_missing_fim()
     {
         $this->expectExceptionMessage('Expecting fim, found <EOF>');
 
-        $code = "inicio";
+        $code = 'inicio';
         $lexer = new ReducLexer($code);
         $parser = new ReducParser($lexer);
         $parser->program();
     }
-
 }

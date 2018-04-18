@@ -29,13 +29,14 @@ class Token
     }
 
     /**
-     * Renders the token as string
+     * Renders the token as string.
      *
      * @return string
      */
     public function __toString()
     {
         $tname = ReducLexer::$tokenNames[$this->type];
-        return "<'" . $this->text . "'," . $tname . ">";
+
+        return "<'".$this->text."',".$tname.'>';
     }
 }

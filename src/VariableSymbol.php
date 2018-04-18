@@ -3,8 +3,8 @@
 namespace Natalnet\Relex;
 
 /**
-* a
-*/
+ * a.
+ */
 class VariableSymbol extends Symbol
 {
 }

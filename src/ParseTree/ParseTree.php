@@ -10,11 +10,11 @@
 
 namespace Natalnet\Relex\ParseTree;
 
-use Natalnet\Relex\Node\NodeInterface;
 use Natalnet\Relex\Node\Node;
+use Natalnet\Relex\Node\NodeInterface;
 
 /**
- * Main implementation of the ParseTreeInterface
+ * Main implementation of the ParseTreeInterface.
  */
 class ParseTree implements ParseTreeInterface
 {
@@ -38,8 +38,7 @@ class ParseTree implements ParseTreeInterface
     {
         $this
             ->emptyStack()
-            ->pushNode($node)
-        ;
+            ->pushNode($node);
 
         return $this;
     }

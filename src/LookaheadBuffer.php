@@ -1,12 +1,9 @@
 <?php
 
-
 namespace Natalnet\Relex;
-
 
 class LookaheadBuffer
 {
-
     protected $buffer = [];
 
     public function loadToken(Token $token)
@@ -28,5 +25,4 @@ class LookaheadBuffer
     {
         return $this->buffer[$position];
     }
-
 }
