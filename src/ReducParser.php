@@ -189,6 +189,7 @@ class ReducParser extends Parser
 
     protected function matchSymbolUse()
     {
+        $this->getParseTree()->tree('symbolUse');
         $symbol = $this->matchSymbol();
         if ($symbol instanceof VariableSymbol) {
             $this->match(ReducLexer::T_EQUALS);
@@ -203,6 +204,7 @@ class ReducParser extends Parser
                     $this->matchString();
             }
         }
+        $this->getParseTree()->end();
     }
 
     public function isFunction(Token $token)
