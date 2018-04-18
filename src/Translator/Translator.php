@@ -311,7 +311,7 @@ class Translator
                         $value = $this->process($node->getChildren()[0]);
                         $value .= $this->process($node->getChildren()[1]);
                         $value .= $this->process($node->getChildren()[2]);
-                        $value .= ';\n';
+                        $value .= ';';
 
                         return $value;
                     }
@@ -393,21 +393,6 @@ class Translator
             'valor' => $this->process($node->getChildren()[3])
         ];
         return str_replace(array_keys($matches), array_values($matches), $this->variableDeclarations[$type]);
-    }
-
-    private function processVariableUse(NodeInterface $node)
-    {
-        switch ($node->getValue()) {
-            case Types::NUMBER_TYPE."TypeVariable":
-                // var_dump($node->getChildren()[1]->getValue());
-                echo "esse";
-                break;
-        }
-        $matches = [
-            'variavel' => $node->getChildren()[0]->getValue()->text,
-            'valor' => $node->getChildren()[2]->getValue()->text
-        ];
-        return str_replace(array_keys($matches), array_values($matches), $this->variableDeclarations[Types::NUMBER_TYPE]);
     }
 
     public function getTranslation()
