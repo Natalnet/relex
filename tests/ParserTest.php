@@ -1,11 +1,11 @@
 <?php
 
 
-use Natalnet\Relex\Exceptions\InvalidCharacterException;
-use Natalnet\Relex\Exceptions\UnexpectedTokenException;
 use Natalnet\Relex\ReducLexer;
 use Natalnet\Relex\ReducParser;
 use PHPUnit\Framework\TestCase;
+use Natalnet\Relex\Exceptions\UnexpectedTokenException;
+use Natalnet\Relex\Exceptions\InvalidCharacterException;
 
 class ParserTest extends TestCase
 {
