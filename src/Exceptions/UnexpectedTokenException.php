@@ -3,8 +3,6 @@
 namespace Natalnet\Relex\Exceptions;
 
 use Exception;
-use Natalnet\Relex\ReducLexer;
-
 
 class UnexpectedTokenException extends Exception
 {
@@ -16,8 +14,8 @@ class UnexpectedTokenException extends Exception
      * @param int $code
      * @param Exception|null $previous
      */
-    public function __construct($line, $expectedToken, $foundToken, $code = 0, Exception $previous = null) {
-
+    public function __construct($line, $expectedToken, $foundToken, $code = 0, Exception $previous = null)
+    {
         $message = "Line $line: Expecting '$expectedToken', found '$foundToken'";
 
         parent::__construct($message, $code, $previous);

@@ -13,7 +13,8 @@ class InvalidCharacterException extends Exception
      * @param int $code
      * @param Exception|null $previous
      */
-    public function __construct($line, $character, $code = 0, Exception $previous = null) {
+    public function __construct($line, $character, $code = 0, Exception $previous = null)
+    {
         $message = "Line $line: Invalid Character '$character'";
 
         parent::__construct($message, $code, $previous);

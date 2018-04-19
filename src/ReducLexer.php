@@ -2,9 +2,8 @@
 
 namespace Natalnet\Relex;
 
-use Exception;
-use Natalnet\Relex\Exceptions\InvalidCharacterException;
 use Natalnet\Relex\Exceptions\UnexpectedTokenException;
+use Natalnet\Relex\Exceptions\InvalidCharacterException;
 
 class ReducLexer extends Lexer
 {
@@ -265,7 +264,7 @@ class ReducLexer extends Lexer
             $buffer .= $this->char;
             $this->consume();
             if ($this->char == self::EOF) {
-                throw new UnexpectedTokenException($this->line, "\"", $this->getTokenName(self::EOF_TYPE));
+                throw new UnexpectedTokenException($this->line, '"', $this->getTokenName(self::EOF_TYPE));
             }
         } while ($this->char != '"');
 

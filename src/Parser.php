@@ -3,8 +3,8 @@
 namespace Natalnet\Relex;
 
 use Exception;
-use Natalnet\Relex\Exceptions\UnexpectedTokenException;
 use Natalnet\Relex\ParseTree\ParseTree;
+use Natalnet\Relex\Exceptions\UnexpectedTokenException;
 
 class Parser
 {
