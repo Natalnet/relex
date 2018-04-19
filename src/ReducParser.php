@@ -3,6 +3,8 @@
 namespace Natalnet\Relex;
 
 use Exception;
+use Natalnet\Relex\Exceptions\SymbolNotDefinedException;
+use Natalnet\Relex\Exceptions\TypeMismatchException;
 
 class ReducParser extends Parser
 {
@@ -165,26 +167,26 @@ class ReducParser extends Parser
         }
     }
 
-    public function matchSymbol($type = null)
+    /**
+     * @param int|null $type
+     * @return FunctionSymbol|VariableSymbol
+     * @throws SymbolNotDefinedException
+     * @throws TypeMismatchException
+     */
+    protected function matchSymbol($type = null)
     {
         if ($this->symbolTable->isDefined($this->currentLookaheadToken()->text)) {
             $symbol = $this->symbolTable->resolve($this->currentLookaheadToken()->text);
             if ($type != null && $symbol->getType() != $type) {
-                throw new Exception('Type mismatch.'.$type);
+                throw new TypeMismatchException($this->currentLookaheadToken()->line, Types::getTypeName($type), Types::getTypeName($symbol->getType()));
             }
-            switch (true) {
-                case $this->isFunction($this->currentLookaheadToken()):
-                    return $this->matchFunction();
-                    break;
-                case $this->isVariable($this->currentLookaheadToken()):
-                    return $this->matchVariable();
-                    break;
-                default:
-                    throw new Exception('Expecting symbol, found '.$this->fetchLookaheadType());
-                    break;
+            if ($this->isFunction($this->currentLookaheadToken())) {
+                return $this->matchFunction();
+            } else {
+                return $this->matchVariable();
             }
         } else {
-            throw new Exception('Symbol not defined');
+            throw new SymbolNotDefinedException($this->currentLookaheadToken()->line, $this->currentLookaheadToken()->text);
         }
     }
 

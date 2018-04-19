@@ -3,6 +3,7 @@
 namespace Natalnet\Relex;
 
 use Exception;
+use Natalnet\Relex\Exceptions\UnexpectedTokenException;
 use Natalnet\Relex\ParseTree\ParseTree;
 
 class Parser
@@ -53,17 +54,15 @@ class Parser
      *
      * @param  int $type
      * @return void
-     * @throws Exception
+     * @throws UnexpectedTokenException
      */
     public function match($type)
     {
         if ($this->fetchLookaheadType() == $type) {
             $this->getParseTree()->leaf($this->fetchLookaheadToken());
-//            if (!$this->isSpeculating())
-//               echo "\n\n".$this->fetchLookaheadToken()."\n";
             $this->consume();
         } else {
-            throw new Exception('Expecting '.$this->input->getTokenName($type).', found '.$this->fetchLookaheadToken()->text);
+            throw new UnexpectedTokenException($this->fetchLookaheadToken()->line, $this->input->getTokenName($type), $this->fetchLookaheadToken()->text);
         }
     }
 

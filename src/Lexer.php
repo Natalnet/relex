@@ -32,6 +32,12 @@ abstract class Lexer
      */
     protected $char;
 
+    /**
+     * Current line.
+     * @var int
+     */
+    protected $line = 1;
+
     public function __construct($input)
     {
         $this->input = $input;

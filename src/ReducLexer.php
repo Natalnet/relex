@@ -3,6 +3,8 @@
 namespace Natalnet\Relex;
 
 use Exception;
+use Natalnet\Relex\Exceptions\InvalidCharacterException;
+use Natalnet\Relex\Exceptions\UnexpectedTokenException;
 
 class ReducLexer extends Lexer
 {
@@ -137,14 +139,19 @@ class ReducLexer extends Lexer
                $this->char <= '9';
     }
 
+    /**
+     * @return Token
+     * @throws InvalidCharacterException
+     */
     public function nextToken()
     {
         while ($this->char != self::EOF) {
             switch ($this->char) {
-                case ' ':
-                case "\t":
                 case "\n":
                 case "\r":
+                    $this->line++;
+                case ' ':
+                case "\t":
                     $this->WS();
                     break;
 
@@ -155,83 +162,83 @@ class ReducLexer extends Lexer
                 case '.':
                     $this->consume();
 
-                    return new Token(self::T_DOT, '.');
+                    return new Token(self::T_DOT, '.', $this->line);
                 case ',':
                     $this->consume();
 
-                    return new Token(self::T_COMMA, ',');
+                    return new Token(self::T_COMMA, ',', $this->line);
                 case '=':
                     $this->consume();
                     if ($this->char == '=') {
                         $this->consume();
 
-                        return new Token(self::T_EQUALS_EQUALS, '==');
+                        return new Token(self::T_EQUALS_EQUALS, '==', $this->line);
                     }
 
-                    return new Token(self::T_EQUALS, '=');
+                    return new Token(self::T_EQUALS, '=', $this->line);
                 case '>':
                     $this->consume();
                     if ($this->char == '=') {
                         $this->consume();
 
-                        return new Token(self::T_GREATER_THAN_EQUAL, '>=');
+                        return new Token(self::T_GREATER_THAN_EQUAL, '>=', $this->line);
                     }
 
-                    return new Token(self::T_GREATER_THAN, '>');
+                    return new Token(self::T_GREATER_THAN, '>', $this->line);
                 case '<':
                     $this->consume();
                     if ($this->char == '=') {
                         $this->consume();
 
-                        return new Token(self::T_LESS_THAN_EQUAL, '<=');
+                        return new Token(self::T_LESS_THAN_EQUAL, '<=', $this->line);
                     }
 
-                    return new Token(self::T_LESS_THAN, '<');
+                    return new Token(self::T_LESS_THAN, '<', $this->line);
                 case '+':
                     $this->consume();
 
-                    return new Token(self::T_PLUS, '+');
+                    return new Token(self::T_PLUS, '+', $this->line);
                 case '-':
                     $this->consume();
 
-                    return new Token(self::T_MINUS, '-');
+                    return new Token(self::T_MINUS, '-', $this->line);
                 case '*':
                     $this->consume();
 
-                    return new Token(self::T_MULTIPLY, '*');
+                    return new Token(self::T_MULTIPLY, '*', $this->line);
                 case '/':
                     $this->consume();
 
-                    return new Token(self::T_DIVIDE, '/');
+                    return new Token(self::T_DIVIDE, '/', $this->line);
                 case '!':
                     $this->consume();
                     if ($this->char == '=') {
                         $this->consume();
 
-                        return new Token(self::T_NOT_EQUAL, '!=');
+                        return new Token(self::T_NOT_EQUAL, '!=', $this->line);
                     }
 
-                    return new Token(self::T_NEGATE, '!');
+                    return new Token(self::T_NEGATE, '!', $this->line);
                 case ':':
                     $this->consume();
 
-                    return new Token(self::T_SEMICOLON, ':');
+                    return new Token(self::T_SEMICOLON, ':', $this->line);
                 case '(':
                     $this->consume();
 
-                    return new Token(self::T_OPEN_PARENTHESIS, '(');
+                    return new Token(self::T_OPEN_PARENTHESIS, '(', $this->line);
                 case ')':
                     $this->consume();
 
-                    return new Token(self::T_CLOSE_PARENTHESIS, ')');
+                    return new Token(self::T_CLOSE_PARENTHESIS, ')', $this->line);
                 case '{':
                     $this->consume();
 
-                    return new Token(self::T_OPEN_CURLY_BRACE, '{');
+                    return new Token(self::T_OPEN_CURLY_BRACE, '{', $this->line);
                 case '}':
                     $this->consume();
 
-                    return new Token(self::T_CLOSE_CURLY_BRACE, '}');
+                    return new Token(self::T_CLOSE_CURLY_BRACE, '}', $this->line);
 
                 default:
                     if ($this->isCurrentCharALetter()) {
@@ -239,14 +246,18 @@ class ReducLexer extends Lexer
                     } elseif ($this->isCurrentCharANumber()) {
                         return $this->handleNumber();
                     } else {
-                        throw new Exception('Invalid character: '.$this->char);
+                        throw new InvalidCharacterException($this->line, $this->char);
                     }
             }
         }
 
-        return new Token(self::EOF_TYPE, '<EOF>');
+        return new Token(self::EOF_TYPE, '<EOF>', $this->line);
     }
 
+    /**
+     * @return Token
+     * @throws UnexpectedTokenException
+     */
     public function handleString()
     {
         $buffer = '';
@@ -254,14 +265,14 @@ class ReducLexer extends Lexer
             $buffer .= $this->char;
             $this->consume();
             if ($this->char == self::EOF) {
-                throw new Exception("Expecting \" character, end of file reached.\n");
+                throw new UnexpectedTokenException($this->line, "\"", $this->getTokenName(self::EOF_TYPE));
             }
         } while ($this->char != '"');
 
         $buffer .= $this->char;
         $this->consume();
 
-        return new Token(self::T_STRING, $buffer);
+        return new Token(self::T_STRING, $buffer, $this->line);
     }
 
     public function handleName()
@@ -274,10 +285,10 @@ class ReducLexer extends Lexer
 
         $name = 'self::T_'.strtoupper($buffer);
         if ($this->isKeyword($name)) {
-            return new Token(constant($name), $buffer);
+            return new Token(constant($name), $buffer, $this->line);
         }
 
-        return new Token(self::T_IDENTIFIER, $buffer);
+        return new Token(self::T_IDENTIFIER, $buffer, $this->line);
     }
 
     public function handleNumber()
@@ -298,7 +309,7 @@ class ReducLexer extends Lexer
             $this->consume();
         }
 
-        return new Token(self::T_NUMBER, $buffer);
+        return new Token(self::T_NUMBER, $buffer, $this->line);
     }
 
     protected function isKeyword($name)
