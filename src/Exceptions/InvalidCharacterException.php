@@ -6,6 +6,9 @@ use Exception;
 
 class InvalidCharacterException extends Exception
 {
+    public $codeLine;
+    public $character;
+
     /**
      * InvalidCharacterException constructor.
      * @param int $line
@@ -15,6 +18,9 @@ class InvalidCharacterException extends Exception
      */
     public function __construct($line, $character, $code = 0, Exception $previous = null)
     {
+        $this->codeLine = $line;
+        $this->character = $character;
+
         $message = "Line $line: Invalid Character '$character'";
 
         parent::__construct($message, $code, $previous);
