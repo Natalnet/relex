@@ -148,7 +148,8 @@ class ReducLexer extends Lexer
             switch ($this->char) {
                 case "\n":
                 case "\r":
-                    $this->line++;
+                    $this->newLine();
+                    break;
                 case ' ':
                 case "\t":
                     $this->WS();
@@ -318,6 +319,14 @@ class ReducLexer extends Lexer
         }
 
         return false;
+    }
+
+    public function newLine()
+    {
+        while ($this->char === "\n" || $this->char === "\r") {
+            $this->line++;
+            $this->consume();
+        }
     }
 
     public function WS()

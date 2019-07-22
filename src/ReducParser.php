@@ -107,7 +107,7 @@ class ReducParser extends Parser
                 $this->matchSymbol(Types::BOOLEAN_TYPE);
                 break;
             default:
-                throw new Exception('Expecting boolean value, found '.$this->fetchLookaheadType());
+                throw new TypeMismatchException($this->currentLookaheadToken()->line, Types::getTypeName(Types::BOOLEAN_TYPE), Types::getTypeName($this->fetchLookaheadType()));
         }
     }
 
