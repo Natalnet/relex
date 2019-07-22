@@ -3,6 +3,7 @@
 namespace Natalnet\Relex;
 
 use Exception;
+use Natalnet\Relex\Exceptions\TypeMismatchException;
 use Natalnet\Relex\ParseTree\ParseTree;
 use Natalnet\Relex\Exceptions\UnexpectedTokenException;
 
@@ -76,13 +77,17 @@ class Parser
     {
         if (in_array($this->fetchLookaheadType(), $types, true)) {
             $this->getParseTree()->leaf($this->fetchLookaheadToken());
-//            echo "\n\n".$this->fetchLookaheadToken()."\n";
             $this->consume();
         } else {
-            throw new Exception('Type mismatch ');
+            throw new TypeMismatchException($this->fetchLookaheadToken()->line);
         }
     }
 
+    /**
+     * Fetch the token at the first index
+     *
+     * @return Token
+     */
     public function currentLookaheadToken()
     {
         return $this->fetchLookaheadToken(1);

@@ -14,12 +14,12 @@ class TypeMismatchException extends Exception
      * TypeMismatchException constructor.
      *
      * @param int $line
-     * @param string $expectedType
-     * @param string $foundType
+     * @param string|null $expectedType
+     * @param string|null $foundType
      * @param int $code
      * @param Exception|null $previous
      */
-    public function __construct($line, $expectedType, $foundType, $code = 0, Exception $previous = null)
+    public function __construct($line, $expectedType = null, $foundType = null, $code = 0, Exception $previous = null)
     {
         $this->codeLine = $line;
         $this->expectedType = $expectedType;

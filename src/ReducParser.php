@@ -5,6 +5,7 @@ namespace Natalnet\Relex;
 use Exception;
 use Natalnet\Relex\Exceptions\TypeMismatchException;
 use Natalnet\Relex\Exceptions\SymbolNotDefinedException;
+use Natalnet\Relex\Exceptions\UnexpectedTokenException;
 
 class ReducParser extends Parser
 {
@@ -135,7 +136,7 @@ class ReducParser extends Parser
                 $this->matchSymbol(Types::NUMBER_TYPE);
                 break;
             default:
-                throw new Exception('Expecting numeric value, found '.$this->fetchLookaheadType());
+                throw new TypeMismatchException($this->fetchLookaheadToken()->line, Types::NUMBER_TYPE, $this->fetchLookaheadType());
         }
     }
 
@@ -163,7 +164,7 @@ class ReducParser extends Parser
                 $this->matchSymbol(Types::STRING_TYPE);
                 break;
             default:
-                throw new Exception('Expecting string value, found '.$this->currentLookaheadToken()->text);
+                throw new UnexpectedTokenException($this->fetchLookaheadToken()->line, null, $this->currentLookaheadToken()->text);
         }
     }
 
@@ -277,7 +278,7 @@ class ReducParser extends Parser
         if ($this->symbolTable->isDefined($this->currentLookaheadToken()->text)) {
             $symbol = $this->symbolTable->resolve($this->fetchLookaheadToken()->text);
             if ($type && $symbol->getType() != $type) {
-                throw new Exception('Type mismatch.');
+                throw new TypeMismatchException($this->currentLookaheadToken()->line, $type, $symbol->getType());
             }
             $this->getParseTree()->tree('identifier');
             $this->match(ReducLexer::T_IDENTIFIER);
@@ -285,7 +286,7 @@ class ReducParser extends Parser
 
             return $symbol;
         } else {
-            throw new Exception('Symbol not defined');
+            throw new SymbolNotDefinedException($this->currentLookaheadToken()->line, $this->currentLookaheadToken()->text);
         }
     }
 
@@ -647,7 +648,7 @@ class ReducParser extends Parser
                 break;
 
             default:
-                throw new Exception('Expecting comparison operator, found '.$this->fetchLookaheadType());
+                throw new UnexpectedTokenException($this->fetchLookaheadToken()->line, null, $this->fetchLookaheadToken());
         }
     }
 
@@ -675,7 +676,7 @@ class ReducParser extends Parser
                 break;
 
             default:
-                throw new Exception('Expecting boolean operator, found '.$this->fetchLookaheadType());
+                throw new UnexpectedTokenException($this->fetchLookaheadToken()->line, null, $this->fetchLookaheadToken());
         }
     }
 
@@ -708,7 +709,7 @@ class ReducParser extends Parser
                 $this->match(ReducLexer::T_DIVIDE);
                 break;
             default:
-                throw new Exception('Expecting math operator, found '.$this->fetchLookaheadToken()->text);
+                throw new UnexpectedTokenException($this->fetchLookaheadToken()->line, null, $this->fetchLookaheadToken());
         }
     }
 }
