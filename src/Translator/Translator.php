@@ -372,6 +372,9 @@ class Translator
                 case ReducLexer::T_OU:
                     return $this->operators[ReducLexer::T_OU];
                     break;
+                case ReducLexer::T_NEGATE:
+                    return $this->operators[ReducLexer::T_NEGATE];
+                    break;
                 case ReducLexer::T_EQUALS_EQUALS:
                     return $this->operators[ReducLexer::T_EQUALS_EQUALS];
                     break;
