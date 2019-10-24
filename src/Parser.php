@@ -3,8 +3,8 @@
 namespace Natalnet\Relex;
 
 use Exception;
-use Natalnet\Relex\Exceptions\TypeMismatchException;
 use Natalnet\Relex\ParseTree\ParseTree;
+use Natalnet\Relex\Exceptions\TypeMismatchException;
 use Natalnet\Relex\Exceptions\UnexpectedTokenException;
 
 class Parser
@@ -84,7 +84,7 @@ class Parser
     }
 
     /**
-     * Fetch the token at the first index
+     * Fetch the token at the first index.
      *
      * @return Token
      */
