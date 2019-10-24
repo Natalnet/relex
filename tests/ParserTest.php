@@ -1,6 +1,5 @@
 <?php
 
-
 use Natalnet\Relex\ReducLexer;
 use Natalnet\Relex\ReducParser;
 use PHPUnit\Framework\TestCase;

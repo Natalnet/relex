@@ -7,7 +7,6 @@ use Natalnet\Relex\Types;
 use Natalnet\Relex\ReducLexer;
 use Natalnet\Relex\Node\NodeInterface;
 use Natalnet\Relex\ParseTree\ParseTreeInterface;
-use phpDocumentor\Reflection\Types\String_;
 
 /**
  * summary.

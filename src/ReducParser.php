@@ -4,8 +4,8 @@ namespace Natalnet\Relex;
 
 use Exception;
 use Natalnet\Relex\Exceptions\TypeMismatchException;
-use Natalnet\Relex\Exceptions\SymbolNotDefinedException;
 use Natalnet\Relex\Exceptions\UnexpectedTokenException;
+use Natalnet\Relex\Exceptions\SymbolNotDefinedException;
 
 class ReducParser extends Parser
 {
