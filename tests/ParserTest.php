@@ -17,7 +17,7 @@ class ParserTest extends TestCase
         $code = '';
         $lexer = new ReducLexer($code);
         $parser = new ReducParser($lexer);
-        $parser->program();
+        $parser->parse();
     }
 
     /** @test */
@@ -28,7 +28,7 @@ class ParserTest extends TestCase
         $code = 'fim';
         $lexer = new ReducLexer($code);
         $parser = new ReducParser($lexer);
-        $parser->program();
+        $parser->parse();
     }
 
     /** @test */
@@ -39,6 +39,6 @@ class ParserTest extends TestCase
         $code = 'inicio';
         $lexer = new ReducLexer($code);
         $parser = new ReducParser($lexer);
-        $parser->program();
+        $parser->parse();
     }
 }

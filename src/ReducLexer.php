@@ -141,6 +141,7 @@ class ReducLexer extends Lexer
     /**
      * @return Token
      * @throws InvalidCharacterException
+     * @throws UnexpectedTokenException
      */
     public function nextToken()
     {
@@ -152,7 +153,7 @@ class ReducLexer extends Lexer
                     break;
                 case ' ':
                 case "\t":
-                    $this->WS();
+                    $this->whiteSpace();
                     break;
 
                 case '"':
@@ -329,7 +330,7 @@ class ReducLexer extends Lexer
         }
     }
 
-    public function WS()
+    public function whiteSpace()
     {
         while (ctype_space($this->char)) {
             $this->consume();

@@ -10,7 +10,7 @@ abstract class Lexer
     const EOF = -1;
 
     /**
-     * Rrepresent EOF token type.
+     * Represent EOF token type.
      */
     const EOF_TYPE = 1;
 
@@ -38,7 +38,7 @@ abstract class Lexer
      */
     protected $line = 1;
 
-    public function __construct($input)
+    public function __construct(string $input)
     {
         $this->input = $input;
         $this->char = substr($input, $this->position, 1); // prime lookahead

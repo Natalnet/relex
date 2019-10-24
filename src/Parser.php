@@ -71,7 +71,7 @@ class Parser
      * Match the token if it is of any specific types or throws exception.
      *
      * @param array $types
-     * @throws Exception
+     * @throws TypeMismatchException
      */
     public function matchAny(array $types)
     {

@@ -9,7 +9,12 @@ use Natalnet\Relex\Exceptions\UnexpectedTokenException;
 
 class ReducParser extends Parser
 {
-    public function program()
+    /**
+     * @throws SymbolNotDefinedException
+     * @throws TypeMismatchException
+     * @throws UnexpectedTokenException
+     */
+    public function parse()
     {
         $this->getParseTree()->value('code');
         $this->symbols();
@@ -21,6 +26,11 @@ class ReducParser extends Parser
         $this->getParseTree()->end();
     }
 
+    /**
+     * @throws SymbolNotDefinedException
+     * @throws TypeMismatchException
+     * @throws UnexpectedTokenException
+     */
     private function symbols()
     {
         $this->getParseTree()->tree('symbols');
@@ -68,6 +78,10 @@ class ReducParser extends Parser
         $this->getParseTree()->end();
     }
 
+    /**
+     * @param $type
+     * @throws UnexpectedTokenException
+     */
     private function varDefinition($type)
     {
         $name = $this->fetchLookaheadToken()->text;
@@ -76,6 +90,11 @@ class ReducParser extends Parser
         $this->symbolTable->define($variable);
     }
 
+    /**
+     * @throws SymbolNotDefinedException
+     * @throws TypeMismatchException
+     * @throws UnexpectedTokenException
+     */
     private function taskDeclaration()
     {
         $this->getParseTree()->tree('declareTask');
@@ -92,6 +111,11 @@ class ReducParser extends Parser
         $this->getParseTree()->end();
     }
 
+    /**
+     * @throws SymbolNotDefinedException
+     * @throws TypeMismatchException
+     * @throws UnexpectedTokenException
+     */
     private function matchBoolean()
     {
         if ($this->fetchLookaheadType() === ReducLexer::T_NEGATE) {
@@ -112,13 +136,16 @@ class ReducParser extends Parser
         }
     }
 
+    /**
+     * @return bool
+     */
     private function speculateBoolean()
     {
         $success = true;
         $this->mark();
         try {
             $this->matchBoolean();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $success = false;
         }
         $this->release();
@@ -126,6 +153,11 @@ class ReducParser extends Parser
         return $success;
     }
 
+    /**
+     * @throws SymbolNotDefinedException
+     * @throws TypeMismatchException
+     * @throws UnexpectedTokenException
+     */
     private function matchNumeric()
     {
         switch ($this->fetchLookaheadType()) {
@@ -146,7 +178,7 @@ class ReducParser extends Parser
         $this->mark();
         try {
             $this->matchNumeric();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $success = false;
         }
         $this->release();
@@ -154,6 +186,11 @@ class ReducParser extends Parser
         return $success;
     }
 
+    /**
+     * @throws SymbolNotDefinedException
+     * @throws TypeMismatchException
+     * @throws UnexpectedTokenException
+     */
     private function matchString()
     {
         switch ($this->fetchLookaheadType()) {
@@ -173,6 +210,7 @@ class ReducParser extends Parser
      * @return FunctionSymbol|VariableSymbol
      * @throws SymbolNotDefinedException
      * @throws TypeMismatchException
+     * @throws UnexpectedTokenException
      */
     protected function matchSymbol($type = null)
     {
@@ -191,6 +229,11 @@ class ReducParser extends Parser
         }
     }
 
+    /**
+     * @throws SymbolNotDefinedException
+     * @throws TypeMismatchException
+     * @throws UnexpectedTokenException
+     */
     protected function matchSymbolUse()
     {
         $this->getParseTree()->tree('symbolUse');
@@ -224,6 +267,12 @@ class ReducParser extends Parser
         return false;
     }
 
+    /**
+     * @return mixed
+     * @throws SymbolNotDefinedException
+     * @throws TypeMismatchException
+     * @throws UnexpectedTokenException
+     */
     public function matchFunction()
     {
         $symbol = $this->symbolTable->resolve($this->currentLookaheadToken()->text);
@@ -245,8 +294,6 @@ class ReducParser extends Parser
                 case Types::BOOLEAN_TYPE:
                     $this->matchBoolean();
                     break;
-                default:
-                    throw new Exception('Unknown exception');
             }
         }
         $this->match(ReducLexer::T_CLOSE_PARENTHESIS);
@@ -270,8 +317,10 @@ class ReducParser extends Parser
 
     /**
      * @param null $type
-     * @return VariableSymbol
-     * @throws Exception
+     * @return mixed
+     * @throws SymbolNotDefinedException
+     * @throws TypeMismatchException
+     * @throws UnexpectedTokenException
      */
     public function matchVariable($type = null)
     {
@@ -290,6 +339,11 @@ class ReducParser extends Parser
         }
     }
 
+    /**
+     * @throws SymbolNotDefinedException
+     * @throws TypeMismatchException
+     * @throws UnexpectedTokenException
+     */
     public function commands()
     {
         $this->getParseTree()->tree('commands');
@@ -336,6 +390,11 @@ class ReducParser extends Parser
         $this->getParseTree()->end();
     }
 
+    /**
+     * @throws SymbolNotDefinedException
+     * @throws TypeMismatchException
+     * @throws UnexpectedTokenException
+     */
     public function ifStatement()
     {
         $this->getParseTree()->tree('ifStatement');
@@ -356,6 +415,11 @@ class ReducParser extends Parser
         $this->getParseTree()->end();
     }
 
+    /**
+     * @throws SymbolNotDefinedException
+     * @throws TypeMismatchException
+     * @throws UnexpectedTokenException
+     */
     public function elseIfStatement()
     {
         $this->getParseTree()->tree('elseIfStatement');
@@ -371,6 +435,11 @@ class ReducParser extends Parser
         $this->getParseTree()->end();
     }
 
+    /**
+     * @throws SymbolNotDefinedException
+     * @throws TypeMismatchException
+     * @throws UnexpectedTokenException
+     */
     public function elseStatement()
     {
         $this->getParseTree()->tree('elseStatement');
@@ -381,6 +450,11 @@ class ReducParser extends Parser
         $this->getParseTree()->end();
     }
 
+    /**
+     * @throws SymbolNotDefinedException
+     * @throws TypeMismatchException
+     * @throws UnexpectedTokenException
+     */
     public function whileStatement()
     {
         $this->getParseTree()->tree('whileStatement');
@@ -395,6 +469,11 @@ class ReducParser extends Parser
         $this->getParseTree()->end();
     }
 
+    /**
+     * @throws SymbolNotDefinedException
+     * @throws TypeMismatchException
+     * @throws UnexpectedTokenException
+     */
     public function repeatStatement()
     {
         $this->getParseTree()->tree('repeatStatement');
@@ -407,6 +486,11 @@ class ReducParser extends Parser
         $this->getParseTree()->end();
     }
 
+    /**
+     * @throws SymbolNotDefinedException
+     * @throws TypeMismatchException
+     * @throws UnexpectedTokenException
+     */
     public function switchStatement()
     {
         $this->getParseTree()->tree('switchStatement');
@@ -442,6 +526,11 @@ class ReducParser extends Parser
         $this->getParseTree()->end();
     }
 
+    /**
+     * @throws SymbolNotDefinedException
+     * @throws TypeMismatchException
+     * @throws UnexpectedTokenException
+     */
     public function forStatement()
     {
         $this->getParseTree()->tree('forStatement');
@@ -460,6 +549,11 @@ class ReducParser extends Parser
         $this->getParseTree()->end();
     }
 
+    /**
+     * @throws SymbolNotDefinedException
+     * @throws TypeMismatchException
+     * @throws UnexpectedTokenException
+     */
     public function doStatement()
     {
         $this->match(ReducLexer::T_FAREI);
@@ -472,6 +566,11 @@ class ReducParser extends Parser
         $this->match(ReducLexer::T_CLOSE_PARENTHESIS);
     }
 
+    /**
+     * @throws SymbolNotDefinedException
+     * @throws TypeMismatchException
+     * @throws UnexpectedTokenException
+     */
     private function matchMathOperation()
     {
 //        $this->getParseTree()->tree('math-operation');
@@ -495,7 +594,7 @@ class ReducParser extends Parser
         $this->mark();
         try {
             $this->matchMathOperation();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $success = false;
         }
         $this->release();
@@ -503,6 +602,11 @@ class ReducParser extends Parser
         return $success;
     }
 
+    /**
+     * @throws SymbolNotDefinedException
+     * @throws TypeMismatchException
+     * @throws UnexpectedTokenException
+     */
     public function matchEqualityExpression()
     {
         if ($this->speculateRelationalExpression()) {
@@ -528,7 +632,7 @@ class ReducParser extends Parser
         $this->mark();
         try {
             $this->matchEqualityExpression();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $success = false;
         }
         $this->release();
@@ -536,6 +640,11 @@ class ReducParser extends Parser
         return $success;
     }
 
+    /**
+     * @throws SymbolNotDefinedException
+     * @throws TypeMismatchException
+     * @throws UnexpectedTokenException
+     */
     public function matchLogicalExpression()
     {
         if ($this->fetchLookaheadType() === ReducLexer::T_OPEN_PARENTHESIS) {
@@ -583,6 +692,11 @@ class ReducParser extends Parser
 //        }
     }
 
+    /**
+     * @throws SymbolNotDefinedException
+     * @throws TypeMismatchException
+     * @throws UnexpectedTokenException
+     */
     public function matchRelationalExpression()
     {
         if ($this->fetchLookaheadType() === ReducLexer::T_OPEN_PARENTHESIS) {
@@ -607,7 +721,7 @@ class ReducParser extends Parser
         $this->mark();
         try {
             $this->matchRelationalExpression();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $success = false;
         }
         $this->release();
@@ -616,7 +730,9 @@ class ReducParser extends Parser
     }
 
     /**
-     * @throws Exception
+     * @throws SymbolNotDefinedException
+     * @throws TypeMismatchException
+     * @throws UnexpectedTokenException
      */
     public function matchCondition()
     {
@@ -625,6 +741,9 @@ class ReducParser extends Parser
         $this->getParseTree()->end();
     }
 
+    /**
+     * @throws UnexpectedTokenException
+     */
     public function matchComparisonOperator()
     {
         switch ($this->fetchLookaheadType()) {
@@ -655,9 +774,8 @@ class ReducParser extends Parser
     public function isLogicalOperator()
     {
         switch ($this->fetchLookaheadType()) {
-            case ReducLexer::T_E:
-                return true;
             case ReducLexer::T_OU:
+            case ReducLexer::T_E:
                 return true;
 
             default:
@@ -665,6 +783,9 @@ class ReducParser extends Parser
         }
     }
 
+    /**
+     * @throws UnexpectedTokenException
+     */
     public function matchLogicalOperator()
     {
         switch ($this->fetchLookaheadType()) {
@@ -693,6 +814,9 @@ class ReducParser extends Parser
         }
     }
 
+    /**
+     * @throws UnexpectedTokenException
+     */
     public function matchMathOperator()
     {
         switch ($this->fetchLookaheadType()) {

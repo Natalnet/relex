@@ -7,6 +7,7 @@ use Natalnet\Relex\Types;
 use Natalnet\Relex\ReducLexer;
 use Natalnet\Relex\Node\NodeInterface;
 use Natalnet\Relex\ParseTree\ParseTreeInterface;
+use phpDocumentor\Reflection\Types\String_;
 
 /**
  * summary.
@@ -169,6 +170,10 @@ class Translator
         if (! ($node->getValue() instanceof Token)) {
 //            echo "\n\n".$node->getValue()."\n\n";
             switch ($node->getValue()) {
+                case 'commands':
+                case 'command':
+                case 'switchCases':
+                case 'condition':
                 case 'symbols':
                     $temp = '';
                     foreach ($node->getChildren() as $child) {
@@ -193,22 +198,6 @@ class Translator
                     break;
                 case 'program':
                     return str_replace('comandos', $this->process($node->getChildren()[1]), $this->mainFunction);
-                    break;
-                case 'commands':
-                    $temp = '';
-                    foreach ($node->getChildren() as $child) {
-                        $temp .= $this->process($child);
-                    }
-
-                    return $temp;
-                    break;
-                case 'command':
-                    $temp = '';
-                    foreach ($node->getChildren() as $child) {
-                        $temp .= $this->process($child);
-                    }
-
-                    return $temp;
                     break;
                 case 'useFunction':
                     return $this->process($node->getChildren()[0]);
@@ -284,15 +273,6 @@ class Translator
                     return str_replace(array_keys($matches), array_values($matches), $this->switchStatement);
                     break;
 
-                case 'switchCases':
-                    $temp = '';
-                    foreach ($node->getChildren() as $child) {
-                        $temp .= $this->process($child);
-                    }
-
-                    return $temp;
-                    break;
-
                 case 'switchCaseStatement':
                     $matches = [
                         'valor' => $this->process($node->getChildren()[1]),
@@ -314,14 +294,6 @@ class Translator
                     return str_replace(array_keys($matches), array_values($matches), $this->forStatement);
                     break;
 
-                case 'condition':
-                    $temp = '';
-                    foreach ($node->getChildren() as $child) {
-                        $temp .= $this->process($child);
-                    }
-
-                    return $temp;
-                    break;
                 case 'symbolUse':
                     if (count($node->getChildren()) == 1) {
                         return $this->process($node->getChildren()[0]);
@@ -388,10 +360,8 @@ class Translator
                     return $this->operators[ReducLexer::T_GREATER_THAN];
                 case ReducLexer::T_GREATER_THAN_EQUAL:
                     return $this->operators[ReducLexer::T_GREATER_THAN_EQUAL];
-                case ReducLexer::T_NUMBER:
-                    return $node->getValue()->text;
-                    break;
                 case ReducLexer::T_IDENTIFIER:
+                case ReducLexer::T_NUMBER:
                     return $node->getValue()->text;
                     break;
                 case ReducLexer::T_OPEN_PARENTHESIS:
@@ -418,6 +388,9 @@ class Translator
         return str_replace(array_keys($matches), array_values($matches), $this->variableDeclarations[$type]);
     }
 
+    /**
+     * @return string
+     */
     public function getTranslation()
     {
         return $this->translatedString;
