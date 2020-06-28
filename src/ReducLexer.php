@@ -2,8 +2,8 @@
 
 namespace Natalnet\Relex;
 
-use Natalnet\Relex\Exceptions\UnexpectedTokenException;
 use Natalnet\Relex\Exceptions\InvalidCharacterException;
+use Natalnet\Relex\Exceptions\UnexpectedTokenException;
 
 class ReducLexer extends Lexer
 {
