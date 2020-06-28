@@ -556,6 +556,7 @@ class ReducParser extends Parser
      */
     public function doStatement()
     {
+        $this->getParseTree()->tree('doStatement');
         $this->match(ReducLexer::T_FAREI);
         $this->match(ReducLexer::T_OPEN_CURLY_BRACE);
         $this->commands();
@@ -564,6 +565,7 @@ class ReducParser extends Parser
         $this->match(ReducLexer::T_OPEN_PARENTHESIS);
         $this->matchCondition();
         $this->match(ReducLexer::T_CLOSE_PARENTHESIS);
+        $this->getParseTree()->end();
     }
 
     /**
