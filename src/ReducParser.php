@@ -3,9 +3,9 @@
 namespace Natalnet\Relex;
 
 use Exception;
+use Natalnet\Relex\Exceptions\SymbolNotDefinedException;
 use Natalnet\Relex\Exceptions\TypeMismatchException;
 use Natalnet\Relex\Exceptions\UnexpectedTokenException;
-use Natalnet\Relex\Exceptions\SymbolNotDefinedException;
 
 class ReducParser extends Parser
 {
@@ -708,10 +708,10 @@ class ReducParser extends Parser
         } else {
             $this->matchMathOperation();
             $this->matchAny([
-                    ReducLexer::T_GREATER_THAN,
-                    ReducLexer::T_GREATER_THAN_EQUAL,
-                    ReducLexer::T_LESS_THAN,
-                    ReducLexer::T_LESS_THAN_EQUAL, ]
+                ReducLexer::T_GREATER_THAN,
+                ReducLexer::T_GREATER_THAN_EQUAL,
+                ReducLexer::T_LESS_THAN,
+                ReducLexer::T_LESS_THAN_EQUAL, ]
             );
             $this->matchMathOperation();
         }

@@ -3,9 +3,9 @@
 namespace Natalnet\Relex;
 
 use Exception;
-use Natalnet\Relex\ParseTree\ParseTree;
 use Natalnet\Relex\Exceptions\TypeMismatchException;
 use Natalnet\Relex\Exceptions\UnexpectedTokenException;
+use Natalnet\Relex\ParseTree\ParseTree;
 
 class Parser
 {

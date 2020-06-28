@@ -2,11 +2,11 @@
 
 namespace Natalnet\Relex\Translator;
 
-use Natalnet\Relex\Token;
-use Natalnet\Relex\Types;
-use Natalnet\Relex\ReducLexer;
 use Natalnet\Relex\Node\NodeInterface;
 use Natalnet\Relex\ParseTree\ParseTreeInterface;
+use Natalnet\Relex\ReducLexer;
+use Natalnet\Relex\Token;
+use Natalnet\Relex\Types;
 
 /**
  * summary.
@@ -301,7 +301,7 @@ class Translator
 
                     return str_replace(array_keys($matches), array_values($matches), $this->doStatement);
                     break;
-                    
+
                 case 'symbolUse':
                     if (count($node->getChildren()) == 1) {
                         return $this->process($node->getChildren()[0]);
