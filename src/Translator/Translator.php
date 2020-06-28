@@ -293,6 +293,15 @@ class Translator
                     return str_replace(array_keys($matches), array_values($matches), $this->forStatement);
                     break;
 
+                case 'doStatement':
+                    $matches = [
+                        'comandos' => $this->process($node->getChildren()[2]),
+                        'condicao' => $this->process($node->getChildren()[6]),
+                    ];
+
+                    return str_replace(array_keys($matches), array_values($matches), $this->doStatement);
+                    break;
+                    
                 case 'symbolUse':
                     if (count($node->getChildren()) == 1) {
                         return $this->process($node->getChildren()[0]);
