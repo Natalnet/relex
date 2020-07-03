@@ -16,11 +16,11 @@ class Types
     {
         switch ($type) {
             case self::NUMBER_TYPE:
-                return 'number';
+                return 'numero';
             case self::STRING_TYPE:
-                return 'string';
+                return 'texto';
             case self::BOOLEAN_TYPE:
-                return 'boolean';
+                return 'booleano';
             default:
                 return '';
         }
