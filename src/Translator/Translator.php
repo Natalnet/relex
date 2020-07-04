@@ -210,7 +210,7 @@ class Translator
                         $matches['valor'] .= $this->process($node->getChildren()[$i]);
                     }
 
-                    return str_replace(array_keys($matches), array_values($matches), 'variavel = valor;');
+                    return str_replace(array_keys($matches), array_values($matches), "variavel = valor;\n");
                     break;
                 case 'ifStatement':
                     $matches = [
