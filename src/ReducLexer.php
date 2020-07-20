@@ -61,7 +61,7 @@ class ReducLexer extends Lexer
     const T_VEZES = 223;
 
     public static $tokenNames = [
-        self::EOF_TYPE               => '<eof>',
+        self::EOF_TYPE               => '<fim do arquivo>',
         self::T_NUMBER               => 'numero',
         self::T_STRING               => 'texto',
         self::T_COMMA                => ',',
