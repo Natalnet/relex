@@ -514,13 +514,13 @@ class ReducParser extends Parser
                     $this->matchString();
                     break;
             }
-            $this->match(ReducLexer::T_SEMICOLON);
+            $this->match(ReducLexer::T_COLON);
             $this->commands();
             $this->getParseTree()->end();
         }
         $this->getParseTree()->end();
         $this->match(ReducLexer::T_OUTROS);
-        $this->match(ReducLexer::T_SEMICOLON);
+        $this->match(ReducLexer::T_COLON);
         $this->commands();
         $this->match(ReducLexer::T_CLOSE_CURLY_BRACE);
         $this->getParseTree()->end();

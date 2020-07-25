@@ -43,8 +43,8 @@ class Token
      */
     public function __toString()
     {
-        $tname = ReducLexer::$tokenNames[$this->type];
+        $tokenName = ReducLexer::$tokenNames[$this->type];
 
-        return "<'".$this->text."',".$tname.'>';
+        return "<'".$this->text."',".$tokenName.'>';
     }
 }

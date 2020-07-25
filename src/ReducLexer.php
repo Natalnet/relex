@@ -24,7 +24,7 @@ class ReducLexer extends Lexer
     const T_NEGATE = 15;
     const T_NOT_EQUAL = 16;
     const T_PLUS = 17;
-    const T_SEMICOLON = 18;
+    const T_COLON = 18;
     const T_OPEN_PARENTHESIS = 19;
     const T_CLOSE_PARENTHESIS = 20;
     const T_OPEN_CURLY_BRACE = 21;
@@ -78,7 +78,7 @@ class ReducLexer extends Lexer
         self::T_NEGATE               => '!',
         self::T_NOT_EQUAL            => '!=',
         self::T_PLUS                 => '+',
-        self::T_SEMICOLON            => ';',
+        self::T_COLON                => ':',
         self::T_OPEN_PARENTHESIS     => '(',
         self::T_CLOSE_PARENTHESIS    => ')',
         self::T_OPEN_CURLY_BRACE     => '{',
@@ -223,7 +223,7 @@ class ReducLexer extends Lexer
                 case ':':
                     $this->consume();
 
-                    return new Token(self::T_SEMICOLON, ':', $this->line);
+                    return new Token(self::T_COLON, ':', $this->line);
                 case '(':
                     $this->consume();
 
