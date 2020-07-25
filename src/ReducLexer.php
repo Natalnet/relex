@@ -29,6 +29,7 @@ class ReducLexer extends Lexer
     const T_CLOSE_PARENTHESIS = 20;
     const T_OPEN_CURLY_BRACE = 21;
     const T_CLOSE_CURLY_BRACE = 22;
+    const T_SHARP = 23;
 
     // Identifier token
     const T_IDENTIFIER = 100;
@@ -83,6 +84,7 @@ class ReducLexer extends Lexer
         self::T_CLOSE_PARENTHESIS    => ')',
         self::T_OPEN_CURLY_BRACE     => '{',
         self::T_CLOSE_CURLY_BRACE    => '}',
+        self::T_SHARP                => '#',
 
         self::T_IDENTIFIER           => 'identificador',
 
@@ -240,6 +242,12 @@ class ReducLexer extends Lexer
                     $this->consume();
 
                     return new Token(self::T_CLOSE_CURLY_BRACE, '}', $this->line);
+                case '#':
+                    $this->consume();
+                    while (! $this->isNewLine($this->char)) {
+                        $this->consume();
+                    }
+                    break;
 
                 default:
                     if ($this->isCurrentCharALetter()) {
@@ -322,9 +330,14 @@ class ReducLexer extends Lexer
         return false;
     }
 
+    private function isNewLine($char)
+    {
+        return $char === "\n" || $char === "\r";
+    }
+
     public function newLine()
     {
-        while ($this->char === "\n" || $this->char === "\r") {
+        while ($this->isNewLine($this->char)) {
             $this->line++;
             $this->consume();
         }
