@@ -168,7 +168,7 @@ class ReducParser extends Parser
                 $this->matchSymbol(Types::NUMBER_TYPE);
                 break;
             default:
-                throw new TypeMismatchException($this->fetchLookaheadToken()->line, Types::getTypeName(Types::NUMBER_TYPE), Types::getTypeName($this->fetchLookaheadType()));
+                throw new TypeMismatchException($this->fetchLookaheadToken()->line, Types::getTypeName(Types::NUMBER_TYPE), $this->fetchLookaheadToken()->text);
         }
     }
 
