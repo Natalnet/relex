@@ -286,13 +286,13 @@ class ReducParser extends Parser
             }
             switch ($symbol->parameterTypes[$i]) {
                 case Types::NUMBER_TYPE:
-                    $this->matchNumeric();
+                    $this->matchMathOperation();
                     break;
                 case Types::STRING_TYPE:
                     $this->matchString();
                     break;
                 case Types::BOOLEAN_TYPE:
-                    $this->matchBoolean();
+                    $this->matchCondition();
                     break;
             }
         }
