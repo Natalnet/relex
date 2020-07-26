@@ -242,7 +242,7 @@ class ReducParser extends Parser
             $this->match(ReducLexer::T_EQUALS);
             switch ($symbol->getType()) {
                 case Types::BOOLEAN_TYPE:
-                    $this->matchLogicalExpression();
+                    $this->matchCondition();
                     break;
                 case Types::NUMBER_TYPE:
                     $this->matchMathOperation();
