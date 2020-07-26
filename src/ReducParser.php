@@ -44,7 +44,7 @@ class ReducParser extends Parser
                     $this->match(ReducLexer::T_NUMERO);
                     $this->varDefinition(Types::NUMBER_TYPE);
                     $this->match(ReducLexer::T_EQUALS);
-                    $this->match(ReducLexer::T_NUMBER);
+                    $this->matchMathOperation();
                     $this->getParseTree()->end();
                     break;
                 case ReducLexer::T_TEXTO:
@@ -62,7 +62,7 @@ class ReducParser extends Parser
                     $this->match(ReducLexer::T_BOOLEANO);
                     $this->varDefinition(Types::BOOLEAN_TYPE);
                     $this->match(ReducLexer::T_EQUALS);
-                    $this->matchBoolean();
+                    $this->matchCondition();
                     $this->getParseTree()->end();
                     break;
                 case ReducLexer::T_TAREFA:
@@ -245,7 +245,7 @@ class ReducParser extends Parser
                     $this->matchLogicalExpression();
                     break;
                 case Types::NUMBER_TYPE:
-                    $this->matchNumeric();
+                    $this->matchMathOperation();
                     break;
                 case Types::STRING_TYPE:
                     $this->matchString();
@@ -575,7 +575,7 @@ class ReducParser extends Parser
      */
     private function matchMathOperation()
     {
-//        $this->getParseTree()->tree('math-operation');
+        $this->getParseTree()->tree('mathOperation');
         if ($this->fetchLookaheadType() === ReducLexer::T_OPEN_PARENTHESIS) {
             $this->match(ReducLexer::T_OPEN_PARENTHESIS);
             $this->matchMathOperation();
@@ -587,7 +587,7 @@ class ReducParser extends Parser
                 $this->matchMathOperation();
             }
         }
-//        $this->getParseTree()->end();
+        $this->getParseTree()->end();
     }
 
     private function speculateMathOperation()

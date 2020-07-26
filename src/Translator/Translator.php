@@ -173,6 +173,7 @@ class Translator
                 case 'command':
                 case 'switchCases':
                 case 'condition':
+                case 'mathOperation':
                 case 'symbols':
                     $temp = '';
                     foreach ($node->getChildren() as $child) {
