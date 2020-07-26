@@ -168,7 +168,7 @@ class ReducParser extends Parser
                 $this->matchSymbol(Types::NUMBER_TYPE);
                 break;
             default:
-                throw new TypeMismatchException($this->fetchLookaheadToken()->line, Types::NUMBER_TYPE, $this->fetchLookaheadType());
+                throw new TypeMismatchException($this->fetchLookaheadToken()->line, Types::getTypeName(Types::NUMBER_TYPE), Types::getTypeName($this->fetchLookaheadType()));
         }
     }
 
@@ -327,7 +327,7 @@ class ReducParser extends Parser
         if ($this->symbolTable->isDefined($this->currentLookaheadToken()->text)) {
             $symbol = $this->symbolTable->resolve($this->fetchLookaheadToken()->text);
             if ($type && $symbol->getType() != $type) {
-                throw new TypeMismatchException($this->currentLookaheadToken()->line, $type, $symbol->getType());
+                throw new TypeMismatchException($this->currentLookaheadToken()->line, Types::getTypeName($type), Types::getTypeName($symbol->getType()));
             }
             $this->getParseTree()->tree('identifier');
             $this->match(ReducLexer::T_IDENTIFIER);
