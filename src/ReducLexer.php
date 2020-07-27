@@ -345,7 +345,7 @@ class ReducLexer extends Lexer
 
     public function whiteSpace()
     {
-        while (ctype_space($this->char)) {
+        while (ctype_space($this->char) && !$this->isNewLine($this->char)) {
             $this->consume();
         }
     }
