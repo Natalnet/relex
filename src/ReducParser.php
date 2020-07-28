@@ -677,7 +677,7 @@ class ReducParser extends Parser
      */
     public function matchRelationalExpression()
     {
-        if ($this->fetchLookaheadType() === ReducLexer::T_OPEN_PARENTHESIS && !$this->speculateMathOperation()) {
+        if ($this->fetchLookaheadType() === ReducLexer::T_OPEN_PARENTHESIS && ! $this->speculateMathOperation()) {
             $this->match(ReducLexer::T_OPEN_PARENTHESIS);
             $this->matchRelationalExpression();
             $this->match(ReducLexer::T_CLOSE_PARENTHESIS);
