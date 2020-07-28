@@ -63,7 +63,7 @@ class Parser
             $this->getParseTree()->leaf($this->fetchLookaheadToken());
             $this->consume();
         } else {
-            throw new UnexpectedTokenException($this->fetchLookaheadToken()->line, $this->input->getTokenName($type), $this->fetchLookaheadToken()->text);
+            throw new UnexpectedTokenException($this->fetchLookaheadToken()->line, $this->input->getTokenName($type), $this->input->getTokenName($this->fetchLookaheadToken()));
         }
     }
 
