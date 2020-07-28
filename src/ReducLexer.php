@@ -100,6 +100,7 @@ class ReducLexer extends Lexer
         self::T_INICIO               => 'inicio',
         self::T_NUMERO               => 'numero',
         self::T_OU                   => 'ou',
+        self::T_OUTROS               => 'outros',
         self::T_PARA                 => 'para',
         self::T_PASSO                => 'passo',
         self::T_REPITA               => 'repita',
