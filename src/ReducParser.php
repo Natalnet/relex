@@ -3,6 +3,7 @@
 namespace Natalnet\Relex;
 
 use Exception;
+use Natalnet\Relex\Exceptions\SymbolRedeclaredException;
 use Natalnet\Relex\Exceptions\SymbolNotDefinedException;
 use Natalnet\Relex\Exceptions\TypeMismatchException;
 use Natalnet\Relex\Exceptions\UnexpectedTokenException;
@@ -69,9 +70,11 @@ class ReducParser extends Parser
                     $continue = true;
                     $this->taskDeclaration();
                     break;
-
+                case ReducLexer::T_INICIO:
+                    $continue = false;
+                    break;
                 default:
-                    // code...
+                    throw new UnexpectedTokenException($this->currentLookaheadToken()->line, 'tipo', $this->currentLookaheadToken());
                     break;
             }
         } while ($continue);
@@ -81,10 +84,16 @@ class ReducParser extends Parser
     /**
      * @param $type
      * @throws UnexpectedTokenException
+     * @throws SymbolRedeclaredException
      */
     private function varDefinition($type)
     {
         $name = $this->fetchLookaheadToken()->text;
+
+        if ($this->symbolTable->isDefined($name)) {
+            throw new SymbolRedeclaredException($this->currentLookaheadToken()->line, $name);
+        }
+
         $this->match(ReducLexer::T_IDENTIFIER);
         $variable = new VariableSymbol($name, $type);
         $this->symbolTable->define($variable);
@@ -94,6 +103,7 @@ class ReducParser extends Parser
      * @throws SymbolNotDefinedException
      * @throws TypeMismatchException
      * @throws UnexpectedTokenException
+     * @throws SymbolRedeclaredException
      */
     private function taskDeclaration()
     {
@@ -101,6 +111,10 @@ class ReducParser extends Parser
         $this->match(ReducLexer::T_TAREFA);
 
         $name = $this->currentLookaheadToken()->text;
+
+        if ($this->symbolTable->isDefined($name)) {
+            throw new SymbolRedeclaredException($this->currentLookaheadToken()->line, $name);
+        }
 
         $this->match(ReducLexer::T_IDENTIFIER);
         $this->match(ReducLexer::T_OPEN_CURLY_BRACE);

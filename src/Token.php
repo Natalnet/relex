@@ -45,6 +45,6 @@ class Token
     {
         $tokenName = ReducLexer::$tokenNames[$this->type];
 
-        return "<'".$this->text."',".$tokenName.'>';
+        return $tokenName;
     }
 }
