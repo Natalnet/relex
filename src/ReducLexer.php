@@ -245,7 +245,7 @@ class ReducLexer extends Lexer
                     return new Token(self::T_CLOSE_CURLY_BRACE, '}', $this->line);
                 case '#':
                     $this->consume();
-                    while (! $this->isNewLine($this->char)) {
+                    while (! $this->isNewLine($this->char) && $this->char !== self::EOF) {
                         $this->consume();
                     }
                     break;
