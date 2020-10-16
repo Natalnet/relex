@@ -90,6 +90,7 @@ class ReducLexer extends Lexer
 
         self::T_ATE                  => 'ate',
         self::T_BOOLEANO             => 'booleano',
+        self::T_CASO                 => 'caso',
         self::T_DE                   => 'de',
         self::T_E                    => 'e',
         self::T_ENQUANTO             => 'enquanto',
